@@ -7,6 +7,10 @@ import android.provider.OpenableColumns
 import android.util.Log
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
+import java.io.File
+import java.io.FileOutputStream
 
 private const val REQUEST_CODE_PICK_FILE = 603
 
@@ -43,7 +47,7 @@ class FlutterDocumentPickerDelegate(
 
                     val fileName = getFileName(uri)
                     if(fileName != null) {
-                        return fileName
+                        return copyToTemp(uri, fileName)
                     }
                 }
             } catch (e: Exception) {
@@ -61,5 +65,27 @@ class FlutterDocumentPickerDelegate(
             }
         }
         return fileName
+    }
+
+    private fun copyToTemp(uri: Uri, fileName: String) : String {
+        val path = activity.cacheDir.path + File.separator + fileName
+
+        val file = File(path)
+
+        if(file.exists()) {
+            file.delete()
+        }
+
+        BufferedInputStream(activity.contentResolver.openInputStream(uri)).use { inputStream ->
+            BufferedOutputStream(FileOutputStream(file)).use { outputStream ->
+                val buf = ByteArray(1024)
+                inputStream.read(buf)
+                do {
+                    outputStream.write(buf)
+                } while (inputStream.read(buf) != -1)
+            }
+        }
+
+        return file.absolutePath
     }
 }
