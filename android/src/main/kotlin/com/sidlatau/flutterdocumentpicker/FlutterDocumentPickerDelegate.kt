@@ -1,9 +1,13 @@
 package com.sidlatau.flutterdocumentpicker
 
 import android.app.Activity
+import android.app.LoaderManager
+import android.content.AsyncTaskLoader
+import android.content.Context
 import android.content.Intent
+import android.content.Loader
 import android.net.Uri
-import android.os.AsyncTask
+import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Log
 import io.flutter.plugin.common.MethodChannel
@@ -14,10 +18,13 @@ import java.io.File
 import java.io.FileOutputStream
 
 private const val REQUEST_CODE_PICK_FILE = 603
+private const val EXTRA_URI = "EXTRA_URI"
+private const val EXTRA_FILENAME = "EXTRA_FILENAME"
+private const val LOADER_FILE_COPY = 603
 
 class FlutterDocumentPickerDelegate(
         private val activity: Activity
-) : PluginRegistry.ActivityResultListener {
+) : PluginRegistry.ActivityResultListener, LoaderManager.LoaderCallbacks<String> {
     private var channelResult: MethodChannel.Result? = null
 
     fun pickDocument(result: MethodChannel.Result) {
@@ -33,15 +40,43 @@ class FlutterDocumentPickerDelegate(
         return when (requestCode) {
             REQUEST_CODE_PICK_FILE -> {
                 val params = getFileCopyParams(resultCode, data)
+                val channelResult = channelResult
                 if (params != null) {
-                    FileCopyTask(activity, channelResult = channelResult!!).execute(params)
+                    startLoader(params)
                 } else {
-                    channelResult?.success(false)
+                    channelResult?.success(null)
                 }
                 return true
             }
             else -> false
         }
+    }
+
+    private fun startLoader(params: FileCopyParams) {
+        val bundle = Bundle()
+        bundle.putParcelable(EXTRA_URI, params.uri)
+        bundle.putString(EXTRA_FILENAME, params.fileName)
+
+        val loaderManager = activity.loaderManager
+        val loader = loaderManager.getLoader<String>(LOADER_FILE_COPY)
+        if (loader == null) {
+            loaderManager.initLoader(LOADER_FILE_COPY, bundle, this)
+        } else {
+            loaderManager.restartLoader(LOADER_FILE_COPY, bundle, this)
+        }
+    }
+
+    override fun onCreateLoader(id: Int, args: Bundle): Loader<String> {
+        val uri = args.getParcelable<Uri>(EXTRA_URI)
+        val fileName = args.getString(EXTRA_FILENAME)
+        return FileCopyTaskLoader(activity, uri, fileName)
+    }
+
+    override fun onLoadFinished(loader: Loader<String>?, data: String?) {
+        channelResult?.success(data)
+    }
+
+    override fun onLoaderReset(loader: Loader<String>?) {
     }
 
     private fun getFileCopyParams(resultCode: Int, data: Intent?): FileCopyParams? {
@@ -76,25 +111,18 @@ class FlutterDocumentPickerDelegate(
 
 data class FileCopyParams(val uri: Uri, val fileName: String)
 
-class FileCopyTask(
-        private val activity: Activity,
-        private val channelResult: MethodChannel.Result
-) : AsyncTask<FileCopyParams, Void, String?>() {
-    override fun doInBackground(vararg params: FileCopyParams?): String? {
-        val param = params.firstOrNull()
-        if (param != null) {
-            return copyToTemp(uri = param.uri, fileName = param.fileName)
-        }
-        return null
+class FileCopyTaskLoader(context: Context, private val uri: Uri, private val fileName: String) : AsyncTaskLoader<String>(context) {
+    override fun loadInBackground(): String {
+        return copyToTemp(uri = uri, fileName = fileName)
     }
 
-    override fun onPostExecute(result: String?) {
-        super.onPostExecute(result)
-        channelResult.success(result)
+    override fun onStartLoading() {
+        super.onStartLoading()
+        forceLoad()
     }
 
     private fun copyToTemp(uri: Uri, fileName: String): String {
-        val path = activity.cacheDir.path + File.separator + fileName
+        val path = context.cacheDir.path + File.separator + fileName
 
         val file = File(path)
 
@@ -102,7 +130,7 @@ class FileCopyTask(
             file.delete()
         }
 
-        BufferedInputStream(activity.contentResolver.openInputStream(uri)).use { inputStream ->
+        BufferedInputStream(context.contentResolver.openInputStream(uri)).use { inputStream ->
             BufferedOutputStream(FileOutputStream(file)).use { outputStream ->
                 val buf = ByteArray(1024)
                 inputStream.read(buf)
