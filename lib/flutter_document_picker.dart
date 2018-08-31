@@ -6,8 +6,7 @@ class FlutterDocumentPicker {
   static const MethodChannel _channel =
       MethodChannel('flutter_document_picker');
 
-  static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
+  static Future<String> openDocument() async {
+    return await _channel.invokeMethod('pickDocument');
   }
 }
