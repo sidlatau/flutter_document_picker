@@ -3,6 +3,7 @@ package com.sidlatau.flutterdocumentpicker
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.os.AsyncTask
 import android.provider.OpenableColumns
 import android.util.Log
 import io.flutter.plugin.common.MethodChannel
@@ -31,23 +32,28 @@ class FlutterDocumentPickerDelegate(
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         return when (requestCode) {
             REQUEST_CODE_PICK_FILE -> {
-                val path = handlePickFileResult(resultCode, data)
-                channelResult?.success(path)
+                val params = getFileCopyParams(resultCode, data)
+                if (params != null) {
+                    FileCopyTask(activity, channelResult = channelResult!!).execute(params)
+                } else {
+                    channelResult?.success(false)
+                }
                 return true
             }
             else -> false
         }
     }
 
-    private fun handlePickFileResult(resultCode: Int, data: Intent?) : String? {
+    private fun getFileCopyParams(resultCode: Int, data: Intent?): FileCopyParams? {
         if (resultCode == Activity.RESULT_OK) {
             try {
                 if (data != null) {
                     val uri: Uri = data.data
 
                     val fileName = getFileName(uri)
-                    if(fileName != null) {
-                        return copyToTemp(uri, fileName)
+
+                    if (fileName != null) {
+                        return FileCopyParams(uri = uri, fileName = fileName)
                     }
                 }
             } catch (e: Exception) {
@@ -66,13 +72,33 @@ class FlutterDocumentPickerDelegate(
         }
         return fileName
     }
+}
 
-    private fun copyToTemp(uri: Uri, fileName: String) : String {
+data class FileCopyParams(val uri: Uri, val fileName: String)
+
+class FileCopyTask(
+        private val activity: Activity,
+        private val channelResult: MethodChannel.Result
+) : AsyncTask<FileCopyParams, Void, String?>() {
+    override fun doInBackground(vararg params: FileCopyParams?): String? {
+        val param = params.firstOrNull()
+        if (param != null) {
+            return copyToTemp(uri = param.uri, fileName = param.fileName)
+        }
+        return null
+    }
+
+    override fun onPostExecute(result: String?) {
+        super.onPostExecute(result)
+        channelResult.success(result)
+    }
+
+    private fun copyToTemp(uri: Uri, fileName: String): String {
         val path = activity.cacheDir.path + File.separator + fileName
 
         val file = File(path)
 
-        if(file.exists()) {
+        if (file.exists()) {
             file.delete()
         }
 
