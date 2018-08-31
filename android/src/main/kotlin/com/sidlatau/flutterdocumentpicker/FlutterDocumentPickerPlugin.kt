@@ -10,6 +10,7 @@ class FlutterDocumentPickerPlugin(
         private val delegate: FlutterDocumentPickerDelegate
 ) : MethodCallHandler {
     companion object {
+        const val TAG = "flutter_document_picker"
         @JvmStatic
         fun registerWith(registrar: Registrar) {
             val channel = MethodChannel(registrar.messenger(), "flutter_document_picker")

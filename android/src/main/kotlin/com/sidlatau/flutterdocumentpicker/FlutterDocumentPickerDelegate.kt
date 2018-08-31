@@ -3,6 +3,8 @@ package com.sidlatau.flutterdocumentpicker
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.provider.OpenableColumns
+import android.util.Log
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry
 
@@ -25,27 +27,39 @@ class FlutterDocumentPickerDelegate(
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         return when (requestCode) {
             REQUEST_CODE_PICK_FILE -> {
-                handlePickFileResult(resultCode, data)
+                val path = handlePickFileResult(resultCode, data)
+                channelResult?.success(path)
                 return true
             }
             else -> false
         }
     }
 
-    private fun handlePickFileResult(resultCode: Int, data: Intent?) {
+    private fun handlePickFileResult(resultCode: Int, data: Intent?) : String? {
         if (resultCode == Activity.RESULT_OK) {
             try {
                 if (data != null) {
                     val uri: Uri = data.data
-                    channelResult?.success(uri.path)
-                } else {
-                    channelResult?.success(null)
+
+                    val fileName = getFileName(uri)
+                    if(fileName != null) {
+                        return fileName
+                    }
                 }
             } catch (e: Exception) {
-                channelResult?.success(null)
+                Log.e(FlutterDocumentPickerPlugin.TAG, "handlePickFileResult", e)
             }
-        } else {
-            channelResult?.success(null)
         }
+        return null
+    }
+
+    private fun getFileName(uri: Uri): String? {
+        var fileName: String? = null
+        activity.contentResolver.query(uri, null, null, null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                fileName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+            }
+        }
+        return fileName
     }
 }
