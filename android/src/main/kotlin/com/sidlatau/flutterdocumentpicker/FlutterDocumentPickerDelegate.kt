@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Log
+import com.sidlatau.flutterdocumentpicker.FlutterDocumentPickerPlugin.Companion.TAG
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry
 import java.io.BufferedInputStream
@@ -26,9 +27,11 @@ class FlutterDocumentPickerDelegate(
         private val activity: Activity
 ) : PluginRegistry.ActivityResultListener, LoaderManager.LoaderCallbacks<String> {
     private var channelResult: MethodChannel.Result? = null
+    private var fileExtension: String? = null
 
-    fun pickDocument(result: MethodChannel.Result) {
+    fun pickDocument(result: MethodChannel.Result, extension: String?) {
         channelResult = result
+        fileExtension = extension
 
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -41,14 +44,23 @@ class FlutterDocumentPickerDelegate(
             REQUEST_CODE_PICK_FILE -> {
                 val params = getFileCopyParams(resultCode, data)
                 val channelResult = channelResult
+                val fileExtension = fileExtension
                 if (params != null) {
-                    startLoader(params)
+                    Log.d(TAG, params.extension)
+                    if(fileExtension != null && fileExtension != params.extension) {
+                        channelResult?.error("extension_mismatch", "Picked file extension mismatch!", params.extension)
+                    } else {
+                        startLoader(params)
+                    }
                 } else {
                     channelResult?.success(null)
                 }
                 return true
             }
-            else -> false
+            else -> {
+                channelResult?.success(null)
+                false
+            }
         }
     }
 
@@ -61,7 +73,8 @@ class FlutterDocumentPickerDelegate(
         val loader = loaderManager.getLoader<String>(LOADER_FILE_COPY)
         if (loader == null) {
             loaderManager.initLoader(LOADER_FILE_COPY, bundle, this)
-        } else {
+        }
+        else {
             loaderManager.restartLoader(LOADER_FILE_COPY, bundle, this)
         }
     }
@@ -74,6 +87,7 @@ class FlutterDocumentPickerDelegate(
 
     override fun onLoadFinished(loader: Loader<String>?, data: String?) {
         channelResult?.success(data)
+        activity.loaderManager.destroyLoader(LOADER_FILE_COPY)
     }
 
     override fun onLoaderReset(loader: Loader<String>?) {
@@ -88,12 +102,25 @@ class FlutterDocumentPickerDelegate(
                     val fileName = getFileName(uri)
 
                     if (fileName != null) {
-                        return FileCopyParams(uri = uri, fileName = fileName)
+
+                        return FileCopyParams(
+                                uri = uri,
+                                fileName = fileName,
+                                extension = getFileExtension(fileName)
+                        )
                     }
                 }
             } catch (e: Exception) {
                 Log.e(FlutterDocumentPickerPlugin.TAG, "handlePickFileResult", e)
             }
+        }
+        return null
+    }
+
+    private fun getFileExtension(fileName: String ) : String? {
+        val dotIndex = fileName.lastIndexOf(".") + 1
+        if(dotIndex > 0 && fileName.length > dotIndex) {
+            return fileName.substring(dotIndex)
         }
         return null
     }
@@ -109,7 +136,7 @@ class FlutterDocumentPickerDelegate(
     }
 }
 
-data class FileCopyParams(val uri: Uri, val fileName: String)
+data class FileCopyParams(val uri: Uri, val fileName: String, val extension: String?)
 
 class FileCopyTaskLoader(context: Context, private val uri: Uri, private val fileName: String) : AsyncTaskLoader<String>(context) {
     override fun loadInBackground(): String {

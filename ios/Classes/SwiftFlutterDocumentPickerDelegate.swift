@@ -11,7 +11,7 @@ import UIKit
 public class SwiftFlutterDocumentPickerDelegate: NSObject {
     fileprivate var flutterResult: FlutterResult?
 
-    func pickDocument(_ params: SwiftFlutterDocumentPickerParams?, result: @escaping FlutterResult) {
+    func pickDocument(_ params: FlutterDocumentPickerParams?, result: @escaping FlutterResult) {
         flutterResult = result
 
         guard let viewController = UIApplication.shared.keyWindow?.rootViewController else {
@@ -24,10 +24,8 @@ public class SwiftFlutterDocumentPickerDelegate: NSObject {
 
         var documentTypes = ["public.data"]
 
-        if let customUtiTypes = params?.utiTypes {
-            if customUtiTypes.count > 0 {
-                documentTypes = customUtiTypes
-            }
+        if let customUtiType = params?.utiType {
+            documentTypes = [customUtiType]
         }
         print(documentTypes)
 

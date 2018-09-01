@@ -13,6 +13,7 @@ public class SwiftFlutterDocumentPickerPlugin: NSObject, FlutterPlugin {
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "pickDocument":
+            print("picke")
             let params = parseArgs(call, result: result)
 
             delegate.pickDocument(params, result: result)
@@ -21,19 +22,18 @@ public class SwiftFlutterDocumentPickerPlugin: NSObject, FlutterPlugin {
         }
     }
 
-    private func parseArgs(_ call: FlutterMethodCall, result: @escaping FlutterResult) -> SwiftFlutterDocumentPickerParams? {
+    private func parseArgs(_ call: FlutterMethodCall, result: @escaping FlutterResult) -> FlutterDocumentPickerParams? {
         guard let args = call.arguments as? [String: Any?] else {
             return nil
         }
 
-        return SwiftFlutterDocumentPickerParams(
-            utiTypes:  args[SwiftFlutterDocumentPickerParams.UTI_TYPES] as? [String]
-        )
+        return FlutterDocumentPickerParams(
+                utiType: args[FlutterDocumentPickerParams.UTI_TYPE] as? String
+            )
     }
 }
 
-struct SwiftFlutterDocumentPickerParams {
-    static let UTI_TYPES = "utiTypes"
-
-    let utiTypes: [String]?
+struct FlutterDocumentPickerParams {
+    static let UTI_TYPE = "ios_utiType"
+    let utiType: String?
 }
