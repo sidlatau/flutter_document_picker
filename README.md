@@ -11,21 +11,29 @@ In iOS `UIDocumentPickerViewController` is used. Files can be filtered by UTI ty
 
 Plugin has two optional parameters to pick only specific document type: `iosUtiType` and `androidFileExtension`.
 
-* `String iosUtiType` (used only in iOS)
-In iOS Uniform Type Identifiers is used to check document types.
+* `String iosUtiType` (used only in **iOS**)
+
+    In iOS Uniform Type Identifiers is used to check document types.
 If value is null "public.data" document type will be provided.
 
-More info:
+    More info:
 https://developer.apple.com/library/archive/qa/qa1587/_index.html
   
-* `String androidFileExtension` (used only in Android)
+* `String androidFileExtension` (used only in **Android**)
 
-In android file extension will be checked.
+    In android file extension will be checked.
 If value is null - picked document extension will not be checked.
 
 # Example
 
 ```dart
+//Without parameters:
+final path = await FlutterDocumentPicker.openDocument();
+  
+  ...
+
+    
+//With parameters:
 FlutterDocumentPickerParams params = FlutterDocumentPickerParams(      
   androidFileExtension: "mwfbak",
   iosUtiType: "com.sidlatau.example.mwfbak",
