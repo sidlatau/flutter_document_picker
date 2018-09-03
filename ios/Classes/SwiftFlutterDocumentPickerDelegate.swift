@@ -27,7 +27,6 @@ public class SwiftFlutterDocumentPickerDelegate: NSObject {
         if let customUtiType = params?.utiType {
             documentTypes = [customUtiType]
         }
-        print(documentTypes)
 
         let documentPickerViewController = UIDocumentPickerViewController(documentTypes: documentTypes, in: .import)
 

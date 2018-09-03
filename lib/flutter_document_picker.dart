@@ -4,17 +4,15 @@ import 'package:flutter/services.dart';
 
 class FlutterDocumentPicker {
   static const MethodChannel _channel =
-  MethodChannel('flutter_document_picker');
+      MethodChannel('flutter_document_picker');
 
   static Future<String> openDocument(
       {FlutterDocumentPickerParams params}) async {
-    print(params?.toJson());
     return await _channel.invokeMethod('pickDocument', params?.toJson());
   }
 }
 
 class FlutterDocumentPickerParams {
-
   /// In iOS Uniform Type Identifiers is used to check document types.
   /// If value is null "public.data" document type will be provided.
   ///

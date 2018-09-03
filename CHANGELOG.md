@@ -5,3 +5,7 @@
 ## 0.0.2
 
 * Fixed documentation.
+
+## 0.0.3
+
+* Removed print statements.

@@ -13,7 +13,6 @@ public class SwiftFlutterDocumentPickerPlugin: NSObject, FlutterPlugin {
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "pickDocument":
-            print("picke")
             let params = parseArgs(call, result: result)
 
             delegate.pickDocument(params, result: result)
