@@ -9,3 +9,7 @@
 ## 0.0.3
 
 * Removed print statements.
+
+## 0.1.0
+
+* iOS part: picked document is copied to temp dir.
