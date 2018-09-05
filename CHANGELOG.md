@@ -13,3 +13,7 @@
 ## 0.1.0
 
 * iOS part: picked document is copied to temp dir.
+
+## 0.1.1
+
+* Android part: removed.
