@@ -16,4 +16,8 @@
 
 ## 0.1.1
 
-* Android part: removed.
+* Android part: Not needed logging removed.
+
+## 1.0.0
+
+* Changed API to support list of allowed file extensions and UTI's.
