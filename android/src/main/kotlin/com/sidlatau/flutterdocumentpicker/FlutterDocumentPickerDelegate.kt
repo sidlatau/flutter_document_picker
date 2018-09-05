@@ -26,11 +26,11 @@ class FlutterDocumentPickerDelegate(
         private val activity: Activity
 ) : PluginRegistry.ActivityResultListener, LoaderManager.LoaderCallbacks<String> {
     private var channelResult: MethodChannel.Result? = null
-    private var fileExtension: String? = null
+    private var allowedFileExtensions: ArrayList<String>? = null
 
-    fun pickDocument(result: MethodChannel.Result, extension: String?) {
+    fun pickDocument(result: MethodChannel.Result, allowedFileExtensions: ArrayList<String>?) {
         channelResult = result
-        fileExtension = extension
+        this.allowedFileExtensions = allowedFileExtensions
 
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -43,9 +43,9 @@ class FlutterDocumentPickerDelegate(
             REQUEST_CODE_PICK_FILE -> {
                 val params = getFileCopyParams(resultCode, data)
                 val channelResult = channelResult
-                val fileExtension = fileExtension
+                val allowedFileExtensions = allowedFileExtensions
                 if (params != null) {
-                    if (fileExtension != null && fileExtension != params.extension) {
+                    if (allowedFileExtensions != null && !allowedFileExtensions.contains(params.extension)) {
                         channelResult?.error("extension_mismatch", "Picked file extension mismatch!", params.extension)
                     } else {
                         startLoader(params)

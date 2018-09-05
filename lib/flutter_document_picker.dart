@@ -14,25 +14,26 @@ class FlutterDocumentPicker {
 
 class FlutterDocumentPickerParams {
   /// In iOS Uniform Type Identifiers is used to check document types.
-  /// If value is null "public.data" document type will be provided.
+  /// If list is null or empty "public.data" document type will be provided.
+  /// Only documents with provided UTI types will be enabled in iOS document picker.
   ///
   /// More info:
   /// https://developer.apple.com/library/archive/qa/qa1587/_index.html
-  final String iosUtiType;
+  final List<String> allowedUtiTypes;
 
-  /// In android file extension will be checked.
-  /// If value is null - picked document extension will not be checked.
-  final String androidFileExtension;
+  /// List of file extensions that picked file should have.
+  /// If list is null or empty - picked document extension will not be checked.
+  final List<String> allowedFileExtensions;
 
   FlutterDocumentPickerParams({
-    this.iosUtiType,
-    this.androidFileExtension,
+    this.allowedUtiTypes,
+    this.allowedFileExtensions,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'ios_utiType': iosUtiType,
-      'android_fileExtension': androidFileExtension,
+      'allowedUtiTypes': allowedUtiTypes,
+      'allowedFileExtensions': allowedFileExtensions,
     };
   }
 }

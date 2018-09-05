@@ -1,28 +1,30 @@
 # flutter_document_picker
 
-Allows user pick a document.
+Allows user pick a document. Picked document is copied to app temporary directory. Optionally allows pick document with specific extension only.
 
-In Android `Intent.ACTION_OPEN_DOCUMENT` is used. This intent is supported only from Android 19 (KitKat) SDK version. 
-When file is picked its extension is checked using  `androidFileExtension` parameter. Then file is copied to app cache directory by using `TaskAsyncLoader`. Copied file path is returned as result. If picked file extension mismatch extension provided by parameter `extension_mismatch` error is returned.
+When file is picked its extension is checked using `allowedFileExtensions` parameter. Then file is copied to app temp directory. Copied file path is returned as result. If picked file extension is not in `allowedFileExtensions` list then `extension_mismatch` error is returned.
 
-In iOS `UIDocumentPickerViewController` is used. Files can be filtered by UTI type using `iosUtiType` parameter. Picked file path is returned as result.
+In Android `Intent.ACTION_OPEN_DOCUMENT` is used. This intent is supported only from Android 19 (KitKat) SDK version. So this plugin can be used only if app `minSdkVersion` is 19 or more.
+
+In iOS `UIDocumentPickerViewController` is used. Files can be filtered by list of UTI types using `allowedUtiTypes` parameter. Picked file path is returned as result.
 
 ### Params
 
-Plugin has two optional parameters to pick only specific document type: `iosUtiType` and `androidFileExtension`.
+Plugin has two optional parameters to pick only specific document type: `allowedUtiTypes` and `allowedFileExtensions`.
 
-* `String iosUtiType` (used only in **iOS**)
+* `List<String> allowedUtiTypes` (used only in **iOS**)
 
     In iOS Uniform Type Identifiers is used to check document types.
-If value is null "public.data" document type will be provided.
+    If list is null or empty "public.data" document type will be provided.
+    Only documents with provided UTI types will be enabled in iOS document picker.
 
     More info:
 https://developer.apple.com/library/archive/qa/qa1587/_index.html
   
-* `String androidFileExtension` (used only in **Android**)
+* `List<String> allowedFileExtensions` (used both in **iOS** and in **Android**)
 
-    In android file extension will be checked.
-If value is null - picked document extension will not be checked.
+    List of file extensions that picked file should have.
+    If list is null or empty - picked document extension will not be checked.
 
 # Example
 
@@ -35,8 +37,8 @@ final path = await FlutterDocumentPicker.openDocument();
     
 //With parameters:
 FlutterDocumentPickerParams params = FlutterDocumentPickerParams(      
-  androidFileExtension: "mwfbak",
-  iosUtiType: "com.sidlatau.example.mwfbak",
+  allowedFileExtensions: ["mwfbak"],
+  allowedUtiTypes: ["com.sidlatau.example.mwfbak"],
 );
 
 final path = await FlutterDocumentPicker.openDocument(params: params);

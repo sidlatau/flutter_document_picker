@@ -27,12 +27,15 @@ public class SwiftFlutterDocumentPickerPlugin: NSObject, FlutterPlugin {
         }
 
         return FlutterDocumentPickerParams(
-                utiType: args[FlutterDocumentPickerParams.UTI_TYPE] as? String
+                allowedUtiTypes: args[FlutterDocumentPickerParams.ALLOWED_UTI_TYPES]  as? [String],
+                allowedFileExtensions: args[FlutterDocumentPickerParams.ALLOWED_FILE_EXTENSIONS]  as? [String]
             )
     }
 }
 
 struct FlutterDocumentPickerParams {
-    static let UTI_TYPE = "ios_utiType"
-    let utiType: String?
+    static let ALLOWED_UTI_TYPES = "allowedUtiTypes"
+    static let ALLOWED_FILE_EXTENSIONS = "allowedFileExtensions"
+    let allowedUtiTypes: [String]?
+    let allowedFileExtensions: [String]?
 }

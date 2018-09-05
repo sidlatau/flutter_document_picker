@@ -10,9 +10,11 @@ import UIKit
 
 public class SwiftFlutterDocumentPickerDelegate: NSObject {
     fileprivate var flutterResult: FlutterResult?
+    fileprivate var params: FlutterDocumentPickerParams?
 
     func pickDocument(_ params: FlutterDocumentPickerParams?, result: @escaping FlutterResult) {
         flutterResult = result
+        self.params = params
 
         guard let viewController = UIApplication.shared.keyWindow?.rootViewController else {
             result(FlutterError.init(code: "error",
@@ -24,8 +26,10 @@ public class SwiftFlutterDocumentPickerDelegate: NSObject {
 
         var documentTypes = ["public.data"]
 
-        if let customUtiType = params?.utiType {
-            documentTypes = [customUtiType]
+        if let allowedUtiTypes = params?.allowedUtiTypes {
+            if !allowedUtiTypes.isEmpty {
+                documentTypes = allowedUtiTypes
+            }
         }
 
         let documentPickerViewController = UIDocumentPickerViewController(documentTypes: documentTypes, in: .import)
@@ -38,6 +42,16 @@ public class SwiftFlutterDocumentPickerDelegate: NSObject {
 
 extension SwiftFlutterDocumentPickerDelegate: UIDocumentPickerDelegate {
     public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
+        let fileExtension = url.pathExtension
+
+        if let allowedFileExtensions = params?.allowedFileExtensions {
+            if !allowedFileExtensions.contains(where: { $0 == fileExtension }) {
+                flutterResult?(FlutterError.init(code: "extension_mismatch",
+                                                 message: "Picked file extension mismatch!",
+                                                 details: fileExtension))
+            }
+        }
+
         // Create file URL to temporary folder
         var tempUrl = URL(fileURLWithPath: NSTemporaryDirectory())
         // Apend filename (name+extension) to URL

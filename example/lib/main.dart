@@ -53,9 +53,10 @@ class _MyAppState extends State<MyApp> {
                 ),
                 Text('$_path'),
                 _pickFileInProgress ? CircularProgressIndicator() : Container(),
+                _buildCommonParams(),
                 Theme.of(context).platform == TargetPlatform.iOS
                     ? _buildIOSParams()
-                    : _buildAndroidParams(),
+                    : Container(),
               ],
             ),
           ),
@@ -73,9 +74,9 @@ class _MyAppState extends State<MyApp> {
       });
 
       FlutterDocumentPickerParams params = FlutterDocumentPickerParams(
-        androidFileExtension:
-            _checkByCustomExtension ? _extensionController.text : null,
-        iosUtiType: _iosPublicDataUTI ? null : _utiController.text,
+        allowedFileExtensions:
+            _checkByCustomExtension ? [_extensionController.text] : null,
+        allowedUtiTypes: _iosPublicDataUTI ? null : [_utiController.text],
       );
 
       result = await FlutterDocumentPicker.openDocument(params: params);
@@ -145,7 +146,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  _buildAndroidParams() {
+  _buildCommonParams() {
     return Padding(
       padding: EdgeInsets.only(top: 24.0),
       child: Card(
@@ -157,7 +158,7 @@ class _MyAppState extends State<MyApp> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: Text(
-                  'Android Params',
+                  'Common Params',
                   style: Theme.of(context).textTheme.headline,
                 ),
               ),
