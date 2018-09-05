@@ -10,7 +10,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Log
-import com.sidlatau.flutterdocumentpicker.FlutterDocumentPickerPlugin.Companion.TAG
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry
 import java.io.BufferedInputStream
@@ -46,8 +45,7 @@ class FlutterDocumentPickerDelegate(
                 val channelResult = channelResult
                 val fileExtension = fileExtension
                 if (params != null) {
-                    Log.d(TAG, params.extension)
-                    if(fileExtension != null && fileExtension != params.extension) {
+                    if (fileExtension != null && fileExtension != params.extension) {
                         channelResult?.error("extension_mismatch", "Picked file extension mismatch!", params.extension)
                     } else {
                         startLoader(params)
@@ -73,8 +71,7 @@ class FlutterDocumentPickerDelegate(
         val loader = loaderManager.getLoader<String>(LOADER_FILE_COPY)
         if (loader == null) {
             loaderManager.initLoader(LOADER_FILE_COPY, bundle, this)
-        }
-        else {
+        } else {
             loaderManager.restartLoader(LOADER_FILE_COPY, bundle, this)
         }
     }
@@ -117,9 +114,9 @@ class FlutterDocumentPickerDelegate(
         return null
     }
 
-    private fun getFileExtension(fileName: String ) : String? {
+    private fun getFileExtension(fileName: String): String? {
         val dotIndex = fileName.lastIndexOf(".") + 1
-        if(dotIndex > 0 && fileName.length > dotIndex) {
+        if (dotIndex > 0 && fileName.length > dotIndex) {
             return fileName.substring(dotIndex)
         }
         return null
