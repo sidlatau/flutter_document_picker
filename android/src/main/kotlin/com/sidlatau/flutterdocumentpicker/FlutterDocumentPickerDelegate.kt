@@ -157,10 +157,11 @@ class FileCopyTaskLoader(context: Context, private val uri: Uri, private val fil
         BufferedInputStream(context.contentResolver.openInputStream(uri)).use { inputStream ->
             BufferedOutputStream(FileOutputStream(file)).use { outputStream ->
                 val buf = ByteArray(1024)
-                inputStream.read(buf)
-                do {
-                    outputStream.write(buf)
-                } while (inputStream.read(buf) != -1)
+                var len = inputStream.read(buf)
+                while (len != -1) {
+                    outputStream.write(buf, 0, len)
+                    len = inputStream.read(buf)
+                }
             }
         }
 
