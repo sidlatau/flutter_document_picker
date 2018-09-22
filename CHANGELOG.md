@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Added `allowedMimeType` parameter to filter files by MIME type in Android.
+    
 ## 1.0.1
 
 * Fixed bug when small file got corrupted after copying (Issuer #3).
