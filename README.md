@@ -10,7 +10,7 @@ In iOS `UIDocumentPickerViewController` is used. Files can be filtered by list o
 
 ### Params
 
-Plugin has two optional parameters to pick only specific document type: `allowedUtiTypes` and `allowedFileExtensions`.
+Plugin has 3 optional parameters to help pick only specific document type:
 
 * `List<String> allowedUtiTypes` (used only in **iOS**)
 
@@ -26,6 +26,10 @@ https://developer.apple.com/library/archive/qa/qa1587/_index.html
     List of file extensions that picked file should have.
     If list is null or empty - picked document extension will not be checked.
 
+*  `allowedMimeType` (used only in **Android**)
+ 
+    Only files with provided MIME type will be shown in document picker.
+    If param is null - `*/*` MIME type will be used.
 # Example
 
 ```dart
@@ -37,8 +41,9 @@ final path = await FlutterDocumentPicker.openDocument();
     
 //With parameters:
 FlutterDocumentPickerParams params = FlutterDocumentPickerParams(      
-  allowedFileExtensions: ["mwfbak"],
-  allowedUtiTypes: ["com.sidlatau.example.mwfbak"],
+  allowedFileExtensions: ['mwfbak'],
+  allowedUtiTypes: ['com.sidlatau.example.mwfbak'],
+  allowedMimeType: 'application/*',
 );
 
 final path = await FlutterDocumentPicker.openDocument(params: params);

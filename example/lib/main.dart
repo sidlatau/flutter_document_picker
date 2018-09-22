@@ -13,6 +13,7 @@ class _MyAppState extends State<MyApp> {
   bool _pickFileInProgress = false;
   bool _iosPublicDataUTI = true;
   bool _checkByCustomExtension = false;
+  bool _checkByMimeType = false;
 
   final _utiController = TextEditingController(
     text: 'com.sidlatau.example.mwfbak',
@@ -20,6 +21,10 @@ class _MyAppState extends State<MyApp> {
 
   final _extensionController = TextEditingController(
     text: 'mwfbak',
+  );
+
+  final _mimeTypeController = TextEditingController(
+    text: 'application/*',
   );
 
   @override
@@ -56,7 +61,7 @@ class _MyAppState extends State<MyApp> {
                 _buildCommonParams(),
                 Theme.of(context).platform == TargetPlatform.iOS
                     ? _buildIOSParams()
-                    : Container(),
+                    : _buildAndroidParams(),
               ],
             ),
           ),
@@ -74,13 +79,24 @@ class _MyAppState extends State<MyApp> {
       });
 
       FlutterDocumentPickerParams params = FlutterDocumentPickerParams(
-        allowedFileExtensions:
-            _checkByCustomExtension ? [_extensionController.text] : null,
-        allowedUtiTypes: _iosPublicDataUTI ? null : [_utiController.text],
+        allowedFileExtensions: _checkByCustomExtension
+            ? _extensionController.text
+                .split(' ')
+                .where((x) => x.isNotEmpty)
+                .toList()
+            : null,
+        allowedUtiTypes: _iosPublicDataUTI
+            ? null
+            : _utiController.text
+                .split(' ')
+                .where((x) => x.isNotEmpty)
+                .toList(),
+        allowedMimeType: _checkByMimeType ? _mimeTypeController.text : null,
       );
 
       result = await FlutterDocumentPicker.openDocument(params: params);
     } catch (e) {
+      print(e);
       result = 'Error: $e';
     } finally {
       setState(() {
@@ -94,59 +110,134 @@ class _MyAppState extends State<MyApp> {
   }
 
   _buildIOSParams() {
-    return Padding(
-      padding: EdgeInsets.only(top: 24.0),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: Text(
-                  'iOS Params',
-                  style: Theme.of(context).textTheme.headline,
-                ),
-              ),
-              Text(
-                'Example app is configured to pick custom document type with extension ".mwfbak"',
-                style: Theme.of(context).textTheme.body1,
-              ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      'Allow pick all documents("public.data" UTI will be used).',
-                      softWrap: true,
-                    ),
-                  ),
-                  Checkbox(
-                    value: _iosPublicDataUTI,
-                    onChanged: (value) {
-                      setState(() {
-                        _iosPublicDataUTI = value;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              TextField(
-                controller: _utiController,
-                enabled: !_iosPublicDataUTI,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Uniform Type Identifier to pick:',
-                ),
-              ),
-            ],
-          ),
+    return ParamsCard(
+      title: 'iOS Params',
+      children: <Widget>[
+        Text(
+          'Example app is configured to pick custom document type with extension ".mwfbak"',
+          style: Theme.of(context).textTheme.body1,
         ),
-      ),
+        Param(
+          isEnabled: !_iosPublicDataUTI,
+          description:
+              'Allow pick all documents("public.data" UTI will be used).',
+          controller: _utiController,
+          onEnabledChanged: (value) {
+            setState(() {
+              _iosPublicDataUTI = value;
+            });
+          },
+          textLabel: 'Uniform Type Identifier to pick:',
+        ),
+      ],
+    );
+  }
+
+  _buildAndroidParams() {
+    return ParamsCard(
+      title: 'Android Params',
+      children: <Widget>[
+        Param(
+          isEnabled: _checkByMimeType,
+          description: 'Filter files by MIME type',
+          controller: _mimeTypeController,
+          onEnabledChanged: (value) {
+            setState(() {
+              _checkByMimeType = value;
+            });
+          },
+          textLabel: 'Allowed MIME type:',
+        ),
+      ],
     );
   }
 
   _buildCommonParams() {
+    return ParamsCard(
+      title: 'Common Params',
+      children: <Widget>[
+        Param(
+          isEnabled: _checkByCustomExtension,
+          description:
+              'Check file by extension - if picked file does not have wantent extension - return "extension_mismatch" error',
+          controller: _extensionController,
+          onEnabledChanged: (value) {
+            setState(() {
+              _checkByCustomExtension = value;
+            });
+          },
+          textLabel: 'File extensions (separated by space):',
+        ),
+      ],
+    );
+  }
+}
+
+class Param extends StatelessWidget {
+  final bool isEnabled;
+  final ValueChanged<bool> onEnabledChanged;
+  final TextEditingController controller;
+  final String description;
+  final String textLabel;
+
+  Param({
+    @required this.isEnabled,
+    this.onEnabledChanged,
+    this.controller,
+    this.description,
+    this.textLabel,
+  })  : assert(isEnabled != null),
+        assert(onEnabledChanged != null),
+        assert(description != null),
+        assert(textLabel != null),
+        assert(controller != null);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Text(
+                  description,
+                  softWrap: true,
+                ),
+              ),
+            ),
+            Checkbox(
+              value: isEnabled,
+              onChanged: onEnabledChanged,
+            ),
+          ],
+        ),
+        TextField(
+          controller: controller,
+          enabled: isEnabled,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: textLabel,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class ParamsCard extends StatelessWidget {
+  final String title;
+  final List<Widget> children;
+
+  ParamsCard({
+    @required this.title,
+    @required this.children,
+  })  : assert(title != null),
+        assert(children != null);
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(top: 24.0),
       child: Card(
@@ -158,40 +249,11 @@ class _MyAppState extends State<MyApp> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: Text(
-                  'Common Params',
+                  title,
                   style: Theme.of(context).textTheme.headline,
                 ),
               ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: Text(
-                        'Check file by extension - if picked file does not have wantent extension - return "extension_mismatch" error',
-                        softWrap: true,
-                      ),
-                    ),
-                  ),
-                  Checkbox(
-                    value: _checkByCustomExtension,
-                    onChanged: (value) {
-                      setState(() {
-                        _checkByCustomExtension = value;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              TextField(
-                controller: _extensionController,
-                enabled: _checkByCustomExtension,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'File extension to pick:',
-                ),
-              ),
-            ],
+            ]..addAll(children),
           ),
         ),
       ),

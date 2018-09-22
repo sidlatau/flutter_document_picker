@@ -25,15 +25,22 @@ class FlutterDocumentPickerParams {
   /// If list is null or empty - picked document extension will not be checked.
   final List<String> allowedFileExtensions;
 
+  /// Android only. allowed MIME type.
+  /// Only files with provided MIME type will be shown in document picker.
+  /// If param is null - */* MIME type will be used.
+  final String allowedMimeType;
+
   FlutterDocumentPickerParams({
     this.allowedUtiTypes,
     this.allowedFileExtensions,
+    this.allowedMimeType,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'allowedUtiTypes': allowedUtiTypes,
       'allowedFileExtensions': allowedFileExtensions,
+      'allowedMimeType': allowedMimeType,
     };
   }
 }

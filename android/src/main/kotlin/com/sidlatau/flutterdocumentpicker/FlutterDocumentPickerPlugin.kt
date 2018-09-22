@@ -12,6 +12,8 @@ class FlutterDocumentPickerPlugin(
     companion object {
         const val TAG = "flutter_document_picker"
         private const val ARG_ALLOWED_FILE_EXTENSIONS = "allowedFileExtensions"
+        private const val ARG_ALLOWED_MIME_TYPE = "allowedMimeType"
+
         @JvmStatic
         fun registerWith(registrar: Registrar) {
             val channel = MethodChannel(registrar.messenger(), "flutter_document_picker")
@@ -30,15 +32,25 @@ class FlutterDocumentPickerPlugin(
 
     override fun onMethodCall(call: MethodCall, result: Result) {
         if (call.method == "pickDocument") {
-            delegate.pickDocument(result, allowedFileExtensions = parseExtensionArg(call))
+            delegate.pickDocument(
+                    result,
+                    allowedFileExtensions = parseList(call, ARG_ALLOWED_FILE_EXTENSIONS),
+                    allowedMimeType = parseString(call, ARG_ALLOWED_MIME_TYPE)
+            )
         } else {
             result.notImplemented()
         }
     }
+    private fun parseList(call: MethodCall, arg: String): ArrayList<String>? {
+        if (call.hasArgument(arg)) {
+            return call.argument<ArrayList<String>>(arg)
+        }
+        return null
+    }
 
-    private fun parseExtensionArg(call: MethodCall): ArrayList<String>? {
-        if (call.hasArgument(ARG_ALLOWED_FILE_EXTENSIONS)) {
-            return  call.argument<ArrayList<String>>(ARG_ALLOWED_FILE_EXTENSIONS)
+    private fun parseString(call: MethodCall, arg: String): String? {
+        if (call.hasArgument(arg)) {
+            return call.argument<String>(arg)
         }
         return null
     }

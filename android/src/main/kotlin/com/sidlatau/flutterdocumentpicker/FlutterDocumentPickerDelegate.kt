@@ -28,13 +28,16 @@ class FlutterDocumentPickerDelegate(
     private var channelResult: MethodChannel.Result? = null
     private var allowedFileExtensions: ArrayList<String>? = null
 
-    fun pickDocument(result: MethodChannel.Result, allowedFileExtensions: ArrayList<String>?) {
+    fun pickDocument(result: MethodChannel.Result,
+                     allowedFileExtensions: ArrayList<String>?,
+                     allowedMimeType: String?
+    ) {
         channelResult = result
         this.allowedFileExtensions = allowedFileExtensions
 
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
-        intent.type = "*/*"
+        intent.type =  allowedMimeType ?: "*/*"
         activity.startActivityForResult(intent, REQUEST_CODE_PICK_FILE)
     }
 
