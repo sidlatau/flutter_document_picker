@@ -1,10 +1,15 @@
+## 1.1.1
+
+* Fixed bug when plugin reacted to not its own request codes (Issue #6).
+    Special thanks to @acheronian for spotting the issue!
+
 ## 1.1.0
 
 * Added `allowedMimeType` parameter to filter files by MIME type in Android.
     
 ## 1.0.1
 
-* Fixed bug when small file got corrupted after copying (Issuer #3).
+* Fixed bug when small file got corrupted after copying (Issue #3).
     Special thanks to @przemyslawsikora for spotting the issue!
 
 ## 1.0.0
