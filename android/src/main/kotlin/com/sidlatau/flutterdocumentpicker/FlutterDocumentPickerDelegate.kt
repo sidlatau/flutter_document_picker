@@ -59,7 +59,6 @@ class FlutterDocumentPickerDelegate(
                 return true
             }
             else -> {
-                channelResult?.success(null)
                 false
             }
         }
