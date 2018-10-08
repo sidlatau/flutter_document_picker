@@ -1,3 +1,7 @@
+## 1.1.2
+
+* Updated Gradle, Kotlin, target SDK versions to latest ones (Issue #11).
+    
 ## 1.1.1
 
 * Fixed bug when plugin reacted to not its own request codes (Issue #6).
