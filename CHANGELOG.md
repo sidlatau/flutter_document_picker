@@ -1,3 +1,7 @@
+## 1.1.3
+
+* Updated Gradle, Kotlin, target SDK versions to latest ones.
+
 ## 1.1.2
 
 * Updated Gradle, Kotlin, target SDK versions to latest ones (Issue #11).
