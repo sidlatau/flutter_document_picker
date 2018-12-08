@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Added ability to sanitize selected document name (Issue #17).
+
 ## 1.1.3
 
 * Updated Gradle, Kotlin, target SDK versions to latest ones.

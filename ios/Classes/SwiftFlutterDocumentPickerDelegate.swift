@@ -52,10 +52,12 @@ extension SwiftFlutterDocumentPickerDelegate: UIDocumentPickerDelegate {
             }
         }
 
+        let fileName = sanitizeFileName(url.lastPathComponent)
+
         // Create file URL to temporary folder
         var tempUrl = URL(fileURLWithPath: NSTemporaryDirectory())
         // Apend filename (name+extension) to URL
-        tempUrl.appendPathComponent(url.lastPathComponent)
+        tempUrl.appendPathComponent(fileName)
         do {
             // If file with same name exists remove it (replace file with new one)
             if FileManager.default.fileExists(atPath: tempUrl.path) {
@@ -74,5 +76,17 @@ extension SwiftFlutterDocumentPickerDelegate: UIDocumentPickerDelegate {
 
     public func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
         flutterResult?(nil)
+    }
+
+    private func sanitizeFileName(_ fileName: String) -> String {
+        var sanitizedFileName = fileName
+
+        if let invalidSymbols = params?.invalidFileNameSymbols {
+            invalidSymbols.forEach{ symbol in
+                sanitizedFileName = sanitizedFileName.replacingOccurrences(of: symbol, with: "_")
+            }
+        }
+
+        return sanitizedFileName
     }
 }

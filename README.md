@@ -30,6 +30,16 @@ https://developer.apple.com/library/archive/qa/qa1587/_index.html
  
     Only files with provided MIME type will be shown in document picker.
     If param is null - `*/*` MIME type will be used.
+
+ * `List<String> invalidFileNameSymbols`  (used both in **iOS** and in **Android**)
+
+    List symbols that will be sanitized to "`_`" in the selected document name.
+    I.e. Google Drive allows symbol '/' in the document name, but  this symbol is not allowed in file name that will be saved locally.
+
+    Default list: `['/']`.
+
+    Example: file name 'Report_2018/12/08.txt' will be replaced to 'Report_2018_12_08.txt'
+
 # Example
 
 ```dart
@@ -44,6 +54,7 @@ FlutterDocumentPickerParams params = FlutterDocumentPickerParams(
   allowedFileExtensions: ['mwfbak'],
   allowedUtiTypes: ['com.sidlatau.example.mwfbak'],
   allowedMimeType: 'application/*',
+  invalidFileNameSymbols: ['/'],
 );
 
 final path = await FlutterDocumentPicker.openDocument(params: params);

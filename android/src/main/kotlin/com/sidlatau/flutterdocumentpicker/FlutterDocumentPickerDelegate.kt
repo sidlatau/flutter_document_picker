@@ -27,13 +27,16 @@ class FlutterDocumentPickerDelegate(
 ) : PluginRegistry.ActivityResultListener, LoaderManager.LoaderCallbacks<String> {
     private var channelResult: MethodChannel.Result? = null
     private var allowedFileExtensions: ArrayList<String>? = null
+    private var invalidFileNameSymbols: ArrayList<String>? = null
 
     fun pickDocument(result: MethodChannel.Result,
                      allowedFileExtensions: ArrayList<String>?,
-                     allowedMimeType: String?
+                     allowedMimeType: String?,
+                     invalidFileNameSymbols: ArrayList<String>?
     ) {
         channelResult = result
         this.allowedFileExtensions = allowedFileExtensions
+        this.invalidFileNameSymbols = invalidFileNameSymbols
 
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -95,17 +98,17 @@ class FlutterDocumentPickerDelegate(
     private fun getFileCopyParams(resultCode: Int, data: Intent?): FileCopyParams? {
         if (resultCode == Activity.RESULT_OK) {
             try {
-                if (data != null) {
-                    val uri: Uri = data.data
-
+                val uri = data?.data
+                if (uri != null) {
                     val fileName = getFileName(uri)
 
                     if (fileName != null) {
+                        val sanitizedFileName = sanitizeFileName(fileName)
 
                         return FileCopyParams(
                                 uri = uri,
-                                fileName = fileName,
-                                extension = getFileExtension(fileName)
+                                fileName = sanitizedFileName,
+                                extension = getFileExtension(sanitizedFileName)
                         )
                     }
                 }
@@ -114,6 +117,18 @@ class FlutterDocumentPickerDelegate(
             }
         }
         return null
+    }
+
+    private fun sanitizeFileName(fileName: String) : String {
+        var sanitizedFileName = fileName
+        val invalidSymbols = invalidFileNameSymbols
+        if(invalidSymbols != null && invalidSymbols.isNotEmpty()) {
+            invalidSymbols.forEach{
+                sanitizedFileName = sanitizedFileName.replace(it, "_")
+            }
+
+        }
+        return sanitizedFileName
     }
 
     private fun getFileExtension(fileName: String): String? {

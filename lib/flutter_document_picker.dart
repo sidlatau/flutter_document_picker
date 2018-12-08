@@ -30,10 +30,18 @@ class FlutterDocumentPickerParams {
   /// If param is null - */* MIME type will be used.
   final String allowedMimeType;
 
+  /// List symbols that will be sanitized to '_' in the selected document name.
+  /// I.e. Google Drive allows symbol '/' in the document name,
+  /// but  this symbol is not allowed in file name that will be saved locally.
+  /// Default list: ['/'].
+  /// Example: file name 'Report_2018/12/08.txt' will be replaced to 'Report_2018_12_08.txt'
+  final List<String> invalidFileNameSymbols;
+
   FlutterDocumentPickerParams({
     this.allowedUtiTypes,
     this.allowedFileExtensions,
     this.allowedMimeType,
+    this.invalidFileNameSymbols = const ['/'],
   });
 
   Map<String, dynamic> toJson() {
@@ -41,6 +49,7 @@ class FlutterDocumentPickerParams {
       'allowedUtiTypes': allowedUtiTypes,
       'allowedFileExtensions': allowedFileExtensions,
       'allowedMimeType': allowedMimeType,
+      'invalidFileNameSymbols': invalidFileNameSymbols,
     };
   }
 }

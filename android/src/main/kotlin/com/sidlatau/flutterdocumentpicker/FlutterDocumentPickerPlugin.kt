@@ -13,6 +13,7 @@ class FlutterDocumentPickerPlugin(
         const val TAG = "flutter_document_picker"
         private const val ARG_ALLOWED_FILE_EXTENSIONS = "allowedFileExtensions"
         private const val ARG_ALLOWED_MIME_TYPE = "allowedMimeType"
+        private const val ARG_INVALID_FILENAME_SYMBOLS = "invalidFileNameSymbols"
 
         @JvmStatic
         fun registerWith(registrar: Registrar) {
@@ -35,7 +36,8 @@ class FlutterDocumentPickerPlugin(
             delegate.pickDocument(
                     result,
                     allowedFileExtensions = parseList(call, ARG_ALLOWED_FILE_EXTENSIONS),
-                    allowedMimeType = parseString(call, ARG_ALLOWED_MIME_TYPE)
+                    allowedMimeType = parseString(call, ARG_ALLOWED_MIME_TYPE),
+                    invalidFileNameSymbols = parseList(call, ARG_INVALID_FILENAME_SYMBOLS)
             )
         } else {
             result.notImplemented()
