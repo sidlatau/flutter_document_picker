@@ -1,3 +1,7 @@
+## 1.3.0
+
+* Updated Swift version to 4.2.
+
 ## 1.2.0
 
 * Added ability to sanitize selected document name (Issue #17).
