@@ -1,3 +1,7 @@
+## 1.4.0
+
+* Updated to work with Android Studio 3.3.
+
 ## 1.3.0
 
 * Updated Swift version to 4.2.
