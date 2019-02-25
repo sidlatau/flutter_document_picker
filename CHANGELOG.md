@@ -1,3 +1,7 @@
+## 2.0.0
+
+* Migrated to Android X.
+
 ## 1.4.0
 
 * Updated to work with Android Studio 3.3.
