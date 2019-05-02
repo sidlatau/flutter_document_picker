@@ -1,3 +1,6 @@
+# 2.0.1
+ * Allowed mime types
+
 ## 2.0.0
 
 * Migrated to Android X.
