@@ -43,7 +43,6 @@ class FlutterDocumentPickerPlugin(
             delegate.pickDocument(
                     result,
                     allowedFileExtensions = parseList(call, ARG_ALLOWED_FILE_EXTENSIONS),
-                    allowedMimeType = parseString(call, ARG_ALLOWED_MIME_TYPE),
                     invalidFileNameSymbols = parseList(call, ARG_INVALID_FILENAME_SYMBOLS),
                     mimeTypes = array
             )
