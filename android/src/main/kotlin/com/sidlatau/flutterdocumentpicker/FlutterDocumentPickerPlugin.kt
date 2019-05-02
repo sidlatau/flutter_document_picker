@@ -14,6 +14,7 @@ class FlutterDocumentPickerPlugin(
         private const val ARG_ALLOWED_FILE_EXTENSIONS = "allowedFileExtensions"
         private const val ARG_ALLOWED_MIME_TYPE = "allowedMimeType"
         private const val ARG_INVALID_FILENAME_SYMBOLS = "invalidFileNameSymbols"
+        private const val ARGS_MIME_TYPES = "mimeTypes"
 
         @JvmStatic
         fun registerWith(registrar: Registrar) {
@@ -37,7 +38,8 @@ class FlutterDocumentPickerPlugin(
                     result,
                     allowedFileExtensions = parseList(call, ARG_ALLOWED_FILE_EXTENSIONS),
                     allowedMimeType = parseString(call, ARG_ALLOWED_MIME_TYPE),
-                    invalidFileNameSymbols = parseList(call, ARG_INVALID_FILENAME_SYMBOLS)
+                    invalidFileNameSymbols = parseList(call, ARG_INVALID_FILENAME_SYMBOLS),
+                    mimeTypes = parseList(call, ARGS_MIME_TYPES)
             )
         } else {
             result.notImplemented()
