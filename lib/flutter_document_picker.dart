@@ -37,11 +37,14 @@ class FlutterDocumentPickerParams {
   /// Example: file name 'Report_2018/12/08.txt' will be replaced to 'Report_2018_12_08.txt'
   final List<String> invalidFileNameSymbols;
 
+  final List<String> mimeTypes;
+
   FlutterDocumentPickerParams({
     this.allowedUtiTypes,
     this.allowedFileExtensions,
     this.allowedMimeType,
     this.invalidFileNameSymbols = const ['/'],
+    this.mimeTypes,
   });
 
   Map<String, dynamic> toJson() {
@@ -50,6 +53,7 @@ class FlutterDocumentPickerParams {
       'allowedFileExtensions': allowedFileExtensions,
       'allowedMimeType': allowedMimeType,
       'invalidFileNameSymbols': invalidFileNameSymbols,
+      'mimeTypes': mimeTypes
     };
   }
 }
