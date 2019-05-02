@@ -92,6 +92,7 @@ class _MyAppState extends State<MyApp> {
                 .where((x) => x.isNotEmpty)
                 .toList(),
         allowedMimeType: _checkByMimeType ? _mimeTypeController.text : null,
+        mimeTypes: ["application/pdf"]
       );
 
       result = await FlutterDocumentPicker.openDocument(params: params);

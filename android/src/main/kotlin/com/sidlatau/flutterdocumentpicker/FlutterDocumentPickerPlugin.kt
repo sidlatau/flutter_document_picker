@@ -33,10 +33,10 @@ class FlutterDocumentPickerPlugin(
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
-        val test = parseList(call, ARGS_MIME_TYPES)
+       /* val test = parseList(call, ARGS_MIME_TYPES)
 
-        val array = emptyArray<String>()
-        test!!.toArray(array)
+        val array = arrayOf<String>()
+        test?.toArray(array)*/
 
         if (call.method == "pickDocument") {
 
@@ -44,7 +44,7 @@ class FlutterDocumentPickerPlugin(
                     result,
                     allowedFileExtensions = parseList(call, ARG_ALLOWED_FILE_EXTENSIONS),
                     invalidFileNameSymbols = parseList(call, ARG_INVALID_FILENAME_SYMBOLS),
-                    mimeTypes = array
+                    mimeTypes =  parseArray(call, ARGS_MIME_TYPES)
             )
         } else {
             result.notImplemented()
@@ -60,6 +60,15 @@ class FlutterDocumentPickerPlugin(
     private fun parseString(call: MethodCall, arg: String): String? {
         if (call.hasArgument(arg)) {
             return call.argument<String>(arg)
+        }
+        return null
+    }
+
+    private fun parseArray(call: MethodCall, arg: String): Array<String>? {
+        if (call.hasArgument(arg)) {
+            val list = call.argument<ArrayList<String>>(arg)
+           val result = list!!.toTypedArray()
+            return result
         }
         return null
     }
