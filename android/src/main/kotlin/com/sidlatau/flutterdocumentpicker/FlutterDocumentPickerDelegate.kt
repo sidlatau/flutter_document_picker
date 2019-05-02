@@ -39,10 +39,14 @@ class FlutterDocumentPickerDelegate(
         this.allowedFileExtensions = allowedFileExtensions
         this.invalidFileNameSymbols = invalidFileNameSymbols
 
+        print("=======================")
+        print(mimeTypes)
+
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
-        intent.type =  "*/*"
+        intent.setType("*/*")
         intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
+
 
         activity.startActivityForResult(intent, REQUEST_CODE_PICK_FILE)
     }
