@@ -35,6 +35,9 @@ class FlutterDocumentPickerParams {
   /// Example: file name 'Report_2018/12/08.txt' will be replaced to 'Report_2018_12_08.txt'
   final List<String> invalidFileNameSymbols;
 
+  /// Android only.
+  /// List that contains mime type the application is able to choose when the document picker is shown.
+  /// If param is null, it will be ignored by the lib.
   final List<String> mimeTypes;
 
   FlutterDocumentPickerParams({

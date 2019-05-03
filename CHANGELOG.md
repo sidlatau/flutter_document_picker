@@ -1,5 +1,5 @@
 # 2.1.0
- * Allowed mime types
+ * Allow library to manage several mime types on Android device.
 
 ## 2.0.0
 

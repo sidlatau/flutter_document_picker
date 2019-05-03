@@ -33,11 +33,6 @@ class FlutterDocumentPickerPlugin(
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
-       /* val test = parseList(call, ARGS_MIME_TYPES)
-
-        val array = arrayOf<String>()
-        test?.toArray(array)*/
-
         if (call.method == "pickDocument") {
 
             delegate.pickDocument(
@@ -67,8 +62,12 @@ class FlutterDocumentPickerPlugin(
     private fun parseArray(call: MethodCall, arg: String): Array<String>? {
         if (call.hasArgument(arg)) {
             val list = call.argument<ArrayList<String>>(arg)
-           val result = list!!.toTypedArray()
-            return result
+            if (list != null) {
+                val result = list!!.toTypedArray()
+                return result
+            } else {
+                return null;
+            }
         }
         return null
     }

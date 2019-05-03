@@ -42,16 +42,10 @@ class FlutterDocumentPickerDelegate(
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.setType("*/*")
-        intent.putExtra(Intent.EXTRA_MIME_TYPES, this.mimeTypes)
-
-
-
-    //    val mimeTypes = arrayOf<String>("application/pdf", "image/*")
-     //   val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-      //  intent.addCategory(Intent.CATEGORY_OPENABLE)
-       // intent.setType("*/*")
-       // intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
-
+        if (mimeTypes != null) {
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, this.mimeTypes);
+        }
+        
 
         activity.startActivityForResult(intent, REQUEST_CODE_PICK_FILE)
     }
