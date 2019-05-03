@@ -1,8 +1,7 @@
 name: flutter_document_picker
-description: A new flutter plugin project.
-version: 2.0.1
-author:
-homepage:
+description: Adocument picker plugin with ability to manage mime types on android and uti type onios
+version: 2.1
+author: brakzog
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
