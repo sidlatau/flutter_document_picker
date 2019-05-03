@@ -1,4 +1,4 @@
-# 2.1
+# 2.1.0
  * Allowed mime types
 
 ## 2.0.0

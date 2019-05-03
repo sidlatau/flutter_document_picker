@@ -1,6 +1,6 @@
 name: flutter_document_picker
 description: Adocument picker plugin with ability to manage mime types on android and uti type onios
-version: 2.1
+version: 2.1.0
 author: brakzog
 
 environment:
