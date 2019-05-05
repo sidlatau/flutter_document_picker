@@ -1,3 +1,15 @@
+## 3.0.0
+
+* Added ability to filter by multiple MIME types in Android.
+
+BREAKING:
+
+`allowedMimeType` parameter is replaced with `allowedMimeTypes`.
+
+MIGRATION:
+
+Just change `allowedMimeType: 'value'` to array `allowedMimeTypes: ['value']`
+
 ## 2.0.0
 
 * Migrated to Android X.
