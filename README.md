@@ -26,10 +26,10 @@ https://developer.apple.com/library/archive/qa/qa1587/_index.html
     List of file extensions that picked file should have.
     If list is null or empty - picked document extension will not be checked.
 
-*  `allowedMimeType` (used only in **Android**)
+*  `List<String> allowedMimeTypes` (used only in **Android**)
  
-    Only files with provided MIME type will be shown in document picker.
-    If param is null - `*/*` MIME type will be used.
+    Only files with provided MIME types will be shown in document picker.
+    If list is null or empty - `*/*` MIME type will be used.
 
  * `List<String> invalidFileNameSymbols`  (used both in **iOS** and in **Android**)
 
@@ -53,7 +53,7 @@ final path = await FlutterDocumentPicker.openDocument();
 FlutterDocumentPickerParams params = FlutterDocumentPickerParams(      
   allowedFileExtensions: ['mwfbak'],
   allowedUtiTypes: ['com.sidlatau.example.mwfbak'],
-  allowedMimeType: 'application/*',
+  allowedMimeTypes: ['application/*'],
   invalidFileNameSymbols: ['/'],
 );
 

@@ -25,10 +25,10 @@ class FlutterDocumentPickerParams {
   /// If list is null or empty - picked document extension will not be checked.
   final List<String> allowedFileExtensions;
 
-  /// Android only. allowed MIME type.
-  /// Only files with provided MIME type will be shown in document picker.
-  /// If param is null - */* MIME type will be used.
-  final String allowedMimeType;
+  /// Android only. Allowed MIME types.
+  /// Only files with provided MIME types will be shown in document picker.
+  /// If list is null or empty - */* MIME type will be used.
+  final List<String> allowedMimeTypes;
 
   /// List symbols that will be sanitized to '_' in the selected document name.
   /// I.e. Google Drive allows symbol '/' in the document name,
@@ -40,7 +40,7 @@ class FlutterDocumentPickerParams {
   FlutterDocumentPickerParams({
     this.allowedUtiTypes,
     this.allowedFileExtensions,
-    this.allowedMimeType,
+    this.allowedMimeTypes,
     this.invalidFileNameSymbols = const ['/'],
   });
 
@@ -48,7 +48,7 @@ class FlutterDocumentPickerParams {
     return {
       'allowedUtiTypes': allowedUtiTypes,
       'allowedFileExtensions': allowedFileExtensions,
-      'allowedMimeType': allowedMimeType,
+      'allowedMimeTypes': allowedMimeTypes,
       'invalidFileNameSymbols': invalidFileNameSymbols,
     };
   }

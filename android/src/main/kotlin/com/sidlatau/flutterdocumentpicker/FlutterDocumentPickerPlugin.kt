@@ -12,7 +12,7 @@ class FlutterDocumentPickerPlugin(
     companion object {
         const val TAG = "flutter_document_picker"
         private const val ARG_ALLOWED_FILE_EXTENSIONS = "allowedFileExtensions"
-        private const val ARG_ALLOWED_MIME_TYPE = "allowedMimeType"
+        private const val ARG_ALLOWED_MIME_TYPES = "allowedMimeTypes"
         private const val ARG_INVALID_FILENAME_SYMBOLS = "invalidFileNameSymbols"
 
         @JvmStatic
@@ -35,24 +35,19 @@ class FlutterDocumentPickerPlugin(
         if (call.method == "pickDocument") {
             delegate.pickDocument(
                     result,
-                    allowedFileExtensions = parseList(call, ARG_ALLOWED_FILE_EXTENSIONS),
-                    allowedMimeType = parseString(call, ARG_ALLOWED_MIME_TYPE),
-                    invalidFileNameSymbols = parseList(call, ARG_INVALID_FILENAME_SYMBOLS)
+                    allowedFileExtensions = parseArray(call, ARG_ALLOWED_FILE_EXTENSIONS),
+                    allowedMimeTypes = parseArray(call, ARG_ALLOWED_MIME_TYPES),
+                    invalidFileNameSymbols = parseArray(call, ARG_INVALID_FILENAME_SYMBOLS)
             )
         } else {
             result.notImplemented()
         }
     }
-    private fun parseList(call: MethodCall, arg: String): ArrayList<String>? {
-        if (call.hasArgument(arg)) {
-            return call.argument<ArrayList<String>>(arg)
-        }
-        return null
-    }
 
-    private fun parseString(call: MethodCall, arg: String): String? {
+
+    private fun parseArray(call: MethodCall, arg: String): Array<String>? {
         if (call.hasArgument(arg)) {
-            return call.argument<String>(arg)
+            return call.argument<ArrayList<String>>(arg)?.toTypedArray()
         }
         return null
     }

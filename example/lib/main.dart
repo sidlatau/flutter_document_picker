@@ -24,7 +24,7 @@ class _MyAppState extends State<MyApp> {
   );
 
   final _mimeTypeController = TextEditingController(
-    text: 'application/*',
+    text: 'application/pdf image/png',
   );
 
   @override
@@ -91,7 +91,12 @@ class _MyAppState extends State<MyApp> {
                 .split(' ')
                 .where((x) => x.isNotEmpty)
                 .toList(),
-        allowedMimeType: _checkByMimeType ? _mimeTypeController.text : null,
+        allowedMimeTypes: _checkByMimeType
+            ? _mimeTypeController.text
+                .split(' ')
+                .where((x) => x.isNotEmpty)
+                .toList()
+            : null,
       );
 
       result = await FlutterDocumentPicker.openDocument(params: params);
@@ -146,7 +151,7 @@ class _MyAppState extends State<MyApp> {
               _checkByMimeType = value;
             });
           },
-          textLabel: 'Allowed MIME type:',
+          textLabel: 'Allowed MIME types (separated by space):',
         ),
       ],
     );
