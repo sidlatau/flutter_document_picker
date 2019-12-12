@@ -1,3 +1,8 @@
+## 3.0.1
+
+* Fixed crash in Android when plugin is used without activity (issue #30).
+    Special thanks to @@LinusU for fixing the issue!
+
 ## 3.0.0
 
 * Added ability to filter by multiple MIME types in Android.
