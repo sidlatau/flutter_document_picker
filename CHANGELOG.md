@@ -1,3 +1,7 @@
+## 3.0.2
+
+* Support Android V2 embedding.
+
 ## 3.0.1
 
 * Fixed crash in Android when plugin is used without activity (issue #30).
