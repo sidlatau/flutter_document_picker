@@ -1,6 +1,7 @@
-## 3.0.2
+## 4.0.0
 
 * Support Android V2 embedding.
+* Specify that this plugin is for Android / iOS platforms only.
 
 ## 3.0.1
 
