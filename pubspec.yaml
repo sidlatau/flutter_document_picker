@@ -1,11 +1,11 @@
 name: flutter_document_picker
 description: Allows user pick a document. Picked document is copied to app temporary directory. Optionally allows pick document with specific extension only.
 version: 3.0.1
-author: Tautvydas Šidlauskas <tautvydas.sidlauskas@gmail.com>
 homepage: https://github.com/sidlatau/flutter_document_picker
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
+  flutter: ">=1.10.0 <2.0.0"
 
 dependencies:
   flutter:
@@ -17,5 +17,9 @@ dependencies:
 # The following section is specific to Flutter.
 flutter:
   plugin:
-    androidPackage: com.sidlatau.flutterdocumentpicker
-    pluginClass: FlutterDocumentPickerPlugin
+    platforms:
+      android:
+        package: com.sidlatau.flutterdocumentpicker
+        pluginClass: FlutterDocumentPickerPlugin
+      ios:
+        pluginClass: FlutterDocumentPickerPlugin
