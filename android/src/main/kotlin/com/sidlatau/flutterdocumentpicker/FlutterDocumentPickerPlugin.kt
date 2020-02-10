@@ -63,18 +63,20 @@ class FlutterDocumentPickerPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
         onAttachedToActivity(binding)
     }
 
-    private fun setup(messenger: BinaryMessenger?, registrar: Registrar?,
-                      activityBinding: ActivityPluginBinding?) {
+    private fun setup(messenger: BinaryMessenger?,
+                      registrar: Registrar?,
+                      activityBinding: ActivityPluginBinding?
+    ) {
         var delegate: FlutterDocumentPickerDelegate? = null
 
         if (registrar != null) {
             delegate = FlutterDocumentPickerDelegate(
-                    activity = registrar.activity()
+                activity = registrar.activity()
             )
             registrar.addActivityResultListener(delegate)
         } else if (activityBinding != null) {
             delegate = FlutterDocumentPickerDelegate(
-                    activity = activityBinding.activity
+                activity = activityBinding.activity
             )
             activityBinding.addActivityResultListener(delegate)
         }
@@ -88,10 +90,10 @@ class FlutterDocumentPickerPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     override fun onMethodCall(call: MethodCall, result: Result) {
         if (call.method == "pickDocument") {
             delegate?.pickDocument(
-                    result,
-                    allowedFileExtensions = parseArray(call, ARG_ALLOWED_FILE_EXTENSIONS),
-                    allowedMimeTypes = parseArray(call, ARG_ALLOWED_MIME_TYPES),
-                    invalidFileNameSymbols = parseArray(call, ARG_INVALID_FILENAME_SYMBOLS)
+                result,
+                allowedFileExtensions = parseArray(call, ARG_ALLOWED_FILE_EXTENSIONS),
+                allowedMimeTypes = parseArray(call, ARG_ALLOWED_MIME_TYPES),
+                invalidFileNameSymbols = parseArray(call, ARG_INVALID_FILENAME_SYMBOLS)
             )
         } else {
             result.notImplemented()
