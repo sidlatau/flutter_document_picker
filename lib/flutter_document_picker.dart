@@ -6,8 +6,8 @@ class FlutterDocumentPicker {
   static const MethodChannel _channel =
       MethodChannel('flutter_document_picker');
 
-  static Future<String> openDocument(
-      {FlutterDocumentPickerParams params}) async {
+  static Future<String?> openDocument(
+      {FlutterDocumentPickerParams? params}) async {
     return await _channel.invokeMethod('pickDocument', params?.toJson());
   }
 }
@@ -19,16 +19,16 @@ class FlutterDocumentPickerParams {
   ///
   /// More info:
   /// https://developer.apple.com/library/archive/qa/qa1587/_index.html
-  final List<String> allowedUtiTypes;
+  final List<String>? allowedUtiTypes;
 
   /// List of file extensions that picked file should have.
   /// If list is null or empty - picked document extension will not be checked.
-  final List<String> allowedFileExtensions;
+  final List<String>? allowedFileExtensions;
 
   /// Android only. Allowed MIME types.
   /// Only files with provided MIME types will be shown in document picker.
   /// If list is null or empty - */* MIME type will be used.
-  final List<String> allowedMimeTypes;
+  final List<String>? allowedMimeTypes;
 
   /// List symbols that will be sanitized to '_' in the selected document name.
   /// I.e. Google Drive allows symbol '/' in the document name,

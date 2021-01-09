@@ -9,7 +9,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _path = '-';
+  String? _path = '-';
   bool _pickFileInProgress = false;
   bool _iosPublicDataUTI = true;
   bool _checkByCustomExtension = false;
@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
               children: <Widget>[
                 Text(
                   'Picked file path:',
-                  style: Theme.of(context).textTheme.title,
+                  style: Theme.of(context).textTheme.headline6,
                 ),
                 Text('$_path'),
                 _pickFileInProgress ? CircularProgressIndicator() : Container(),
@@ -71,7 +71,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   _pickDocument() async {
-    String result;
+    String? result;
     try {
       setState(() {
         _path = '-';
@@ -120,7 +120,7 @@ class _MyAppState extends State<MyApp> {
       children: <Widget>[
         Text(
           'Example app is configured to pick custom document type with extension ".mwfbak"',
-          style: Theme.of(context).textTheme.body1,
+          style: Theme.of(context).textTheme.bodyText2,
         ),
         Param(
           isEnabled: !_iosPublicDataUTI,
@@ -128,9 +128,11 @@ class _MyAppState extends State<MyApp> {
               'Allow pick all documents("public.data" UTI will be used).',
           controller: _utiController,
           onEnabledChanged: (value) {
-            setState(() {
-              _iosPublicDataUTI = value;
-            });
+            if (value != null) {
+              setState(() {
+                _iosPublicDataUTI = value;
+              });
+            }
           },
           textLabel: 'Uniform Type Identifier to pick:',
         ),
@@ -147,9 +149,11 @@ class _MyAppState extends State<MyApp> {
           description: 'Filter files by MIME type',
           controller: _mimeTypeController,
           onEnabledChanged: (value) {
-            setState(() {
-              _checkByMimeType = value;
-            });
+            if (value != null) {
+              setState(() {
+                _checkByMimeType = value;
+              });
+            }
           },
           textLabel: 'Allowed MIME types (separated by space):',
         ),
@@ -167,9 +171,11 @@ class _MyAppState extends State<MyApp> {
               'Check file by extension - if picked file does not have wantent extension - return "extension_mismatch" error',
           controller: _extensionController,
           onEnabledChanged: (value) {
-            setState(() {
-              _checkByCustomExtension = value;
-            });
+            if (value != null) {
+              setState(() {
+                _checkByCustomExtension = value;
+              });
+            }
           },
           textLabel: 'File extensions (separated by space):',
         ),
@@ -180,22 +186,18 @@ class _MyAppState extends State<MyApp> {
 
 class Param extends StatelessWidget {
   final bool isEnabled;
-  final ValueChanged<bool> onEnabledChanged;
+  final ValueChanged<bool?> onEnabledChanged;
   final TextEditingController controller;
   final String description;
   final String textLabel;
 
   Param({
-    @required this.isEnabled,
-    this.onEnabledChanged,
-    this.controller,
-    this.description,
-    this.textLabel,
-  })  : assert(isEnabled != null),
-        assert(onEnabledChanged != null),
-        assert(description != null),
-        assert(textLabel != null),
-        assert(controller != null);
+    required this.isEnabled,
+    required this.onEnabledChanged,
+    required this.controller,
+    required this.description,
+    required this.textLabel,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -236,10 +238,9 @@ class ParamsCard extends StatelessWidget {
   final List<Widget> children;
 
   ParamsCard({
-    @required this.title,
-    @required this.children,
-  })  : assert(title != null),
-        assert(children != null);
+    required this.title,
+    required this.children,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -255,7 +256,7 @@ class ParamsCard extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: Text(
                   title,
-                  style: Theme.of(context).textTheme.headline,
+                  style: Theme.of(context).textTheme.headline5,
                 ),
               ),
             ]..addAll(children),
