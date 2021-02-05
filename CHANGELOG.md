@@ -1,3 +1,8 @@
+## 4.0.1
+
+* Improved error handling in Android side (Issue #41).
+    Thanks @morrica!
+    
 ## 4.0.0
 
 * Support Android V2 embedding.
