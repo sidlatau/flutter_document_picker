@@ -24,7 +24,7 @@ private const val LOADER_FILE_COPY = 603
 
 class FlutterDocumentPickerDelegate(
     private val activity: Activity
-) : PluginRegistry.ActivityResultListener, LoaderManager.LoaderCallbacks<String> {
+) : PluginRegistry.ActivityResultListener, LoaderManager.LoaderCallbacks<FileCopyTaskLoaderResult> {
     private var channelResult: MethodChannel.Result? = null
     private var allowedFileExtensions: Array<String>? = null
     private var invalidFileNameSymbols: Array<String>? = null
@@ -91,18 +91,22 @@ class FlutterDocumentPickerDelegate(
         }
     }
 
-    override fun onCreateLoader(id: Int, args: Bundle): Loader<String> {
+    override fun onCreateLoader(id: Int, args: Bundle): Loader<FileCopyTaskLoaderResult> {
         val uri = args.getParcelable<Uri>(EXTRA_URI)!!
         val fileName = args.getString(EXTRA_FILENAME)!!
         return FileCopyTaskLoader(activity, uri, fileName)
     }
 
-    override fun onLoadFinished(loader: Loader<String>?, data: String?) {
-        channelResult?.success(data)
+    override fun onLoadFinished(loader: Loader<FileCopyTaskLoaderResult>?, data: FileCopyTaskLoaderResult) {
+        if(data.isSuccess()) {
+            channelResult?.success(data.result)
+        } else {
+            channelResult?.error("LOAD_FAILED", data.error.toString(), null)
+        }
         activity.loaderManager.destroyLoader(LOADER_FILE_COPY)
     }
 
-    override fun onLoaderReset(loader: Loader<String>?) {
+    override fun onLoaderReset(loader: Loader<FileCopyTaskLoaderResult>?) {
     }
 
     private fun getFileCopyParams(resultCode: Int, data: Intent?): FileCopyParams? {
@@ -162,9 +166,14 @@ class FlutterDocumentPickerDelegate(
 
 data class FileCopyParams(val uri: Uri, val fileName: String, val extension: String?)
 
-class FileCopyTaskLoader(context: Context, private val uri: Uri, private val fileName: String) : AsyncTaskLoader<String>(context) {
-    override fun loadInBackground(): String {
-        return copyToTemp(uri = uri, fileName = fileName)
+class FileCopyTaskLoader(context: Context, private val uri: Uri, private val fileName: String) : AsyncTaskLoader<FileCopyTaskLoaderResult>(context) {
+    override fun loadInBackground(): FileCopyTaskLoaderResult {
+        try {
+            return FileCopyTaskLoaderResult(copyToTemp(uri = uri, fileName = fileName))
+        } catch (e: Exception) {
+            Log.e(FlutterDocumentPickerPlugin.TAG, "handlePickFileResult", e)
+            return FileCopyTaskLoaderResult(e)
+        }
     }
 
     override fun onStartLoading() {
@@ -193,5 +202,24 @@ class FileCopyTaskLoader(context: Context, private val uri: Uri, private val fil
         }
 
         return file.absolutePath
+    }
+}
+
+class FileCopyTaskLoaderResult {
+    val result: String?
+    val error: Exception?
+
+    constructor(result: String) {
+        this.result = result
+        this.error = null;
+    }
+
+    constructor(error: Exception) {
+        this.result = null;
+        this.error = error;
+    }
+
+    fun isSuccess(): Boolean {
+        return error == null
     }
 }
