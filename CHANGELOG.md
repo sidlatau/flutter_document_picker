@@ -1,3 +1,7 @@
+## 5.1.0
+
+* Fix build issues on Flutter 3.
+
 ## 5.0.1-nullsafety.0
 
 * Improved error handling in Android side (Issue #41).
