@@ -1,8 +1,12 @@
-## 4.0.1
+## 5.0.1-nullsafety.0
 
 * Improved error handling in Android side (Issue #41).
     Thanks @morrica!
     
+## 5.0.0-nullsafety.0
+
+* Migrate to null-safety.
+
 ## 4.0.0
 
 * Support Android V2 embedding.
@@ -11,7 +15,7 @@
 ## 3.0.1
 
 * Fixed crash in Android when plugin is used without activity (issue #30).
-    Special thanks to @@LinusU for fixing the issue!
+    Special thanks to @LinusU for fixing the issue!
 
 ## 3.0.0
 
