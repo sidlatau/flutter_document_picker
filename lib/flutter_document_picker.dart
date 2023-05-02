@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 class FlutterDocumentPicker {
-  static const MethodChannel _channel =
-      MethodChannel('flutter_document_picker');
+  static const MethodChannel _channel = MethodChannel('flutter_document_picker');
 
-  static Future<String?> openDocument(
-      {FlutterDocumentPickerParams? params}) async {
+  static Future<String?> openDocument({FlutterDocumentPickerParams? params}) async {
     return await _channel.invokeMethod('pickDocument', params?.toJson());
+  }
+
+  static Future<String?> openDocuments({FlutterDocumentPickerParams? params}) async {
+    return await _channel.invokeMethod('pickDocuments', params?.toJson());
   }
 }
 
@@ -37,11 +39,14 @@ class FlutterDocumentPickerParams {
   /// Example: file name 'Report_2018/12/08.txt' will be replaced to 'Report_2018_12_08.txt'
   final List<String> invalidFileNameSymbols;
 
+  final bool isMultipleSelection;
+
   FlutterDocumentPickerParams({
     this.allowedUtiTypes,
     this.allowedFileExtensions,
     this.allowedMimeTypes,
     this.invalidFileNameSymbols = const ['/'],
+    this.isMultipleSelection = false,
   });
 
   Map<String, dynamic> toJson() {
@@ -50,6 +55,7 @@ class FlutterDocumentPickerParams {
       'allowedFileExtensions': allowedFileExtensions,
       'allowedMimeTypes': allowedMimeTypes,
       'invalidFileNameSymbols': invalidFileNameSymbols,
+      'isMultipleSelection': isMultipleSelection,
     };
   }
 }

@@ -35,6 +35,9 @@ public class SwiftFlutterDocumentPickerDelegate: NSObject {
         let documentPickerViewController = UIDocumentPickerViewController(documentTypes: documentTypes, in: .import)
 
         documentPickerViewController.delegate = self
+        if(params?.isMultipleSelection == true){
+            documentPickerViewController.allowsMultipleSelection = true
+        }
 
         viewController.present(documentPickerViewController, animated: true, completion: nil)
     }
