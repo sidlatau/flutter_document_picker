@@ -6,11 +6,22 @@ class FlutterDocumentPicker {
   static const MethodChannel _channel = MethodChannel('flutter_document_picker');
 
   static Future<String?> openDocument({FlutterDocumentPickerParams? params}) async {
-    return await _channel.invokeMethod('pickDocument', params?.toJson());
+    final result = (await _channel.invokeMethod(
+      'pickDocument',
+      params?.toJson(),
+    ))
+        ?.cast<String?>();
+    return result.length > 0 ? result.first : null;
   }
 
-  static Future<String?> openDocuments({FlutterDocumentPickerParams? params}) async {
-    return await _channel.invokeMethod('pickDocuments', params?.toJson());
+  static Future<List<String?>?> openDocuments({FlutterDocumentPickerParams? params}) async {
+    final paramsJson = params?.toJson();
+    paramsJson?.addAll({'isMultipleSelection': true});
+    return (await _channel.invokeMethod(
+      'pickDocument',
+      paramsJson,
+    ))
+        ?.cast<String?>();
   }
 }
 
@@ -39,14 +50,11 @@ class FlutterDocumentPickerParams {
   /// Example: file name 'Report_2018/12/08.txt' will be replaced to 'Report_2018_12_08.txt'
   final List<String> invalidFileNameSymbols;
 
-  final bool isMultipleSelection;
-
   FlutterDocumentPickerParams({
     this.allowedUtiTypes,
     this.allowedFileExtensions,
     this.allowedMimeTypes,
     this.invalidFileNameSymbols = const ['/'],
-    this.isMultipleSelection = false,
   });
 
   Map<String, dynamic> toJson() {
@@ -55,7 +63,6 @@ class FlutterDocumentPickerParams {
       'allowedFileExtensions': allowedFileExtensions,
       'allowedMimeTypes': allowedMimeTypes,
       'invalidFileNameSymbols': invalidFileNameSymbols,
-      'isMultipleSelection': isMultipleSelection,
     };
   }
 }
