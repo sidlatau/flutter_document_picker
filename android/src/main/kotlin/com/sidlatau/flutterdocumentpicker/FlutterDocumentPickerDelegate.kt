@@ -24,22 +24,26 @@ private const val LOADER_FILE_COPY = 603
 
 class FlutterDocumentPickerDelegate(
     private val activity: Activity
-) : PluginRegistry.ActivityResultListener, LoaderManager.LoaderCallbacks<FileCopyTaskLoaderResult> {
+) : PluginRegistry.ActivityResultListener, LoaderManager.LoaderCallbacks<List<FileCopyTaskLoaderResult>> {
     private var channelResult: MethodChannel.Result? = null
     private var allowedFileExtensions: Array<String>? = null
     private var invalidFileNameSymbols: Array<String>? = null
+    private var isMultipleSelection: Boolean? = null
 
     fun pickDocument(result: MethodChannel.Result,
                      allowedFileExtensions: Array<String>?,
                      allowedMimeTypes: Array<String>?,
-                     invalidFileNameSymbols: Array<String>?
+                     invalidFileNameSymbols: Array<String>?,
+                     isMultipleSelection: Boolean?
     ) {
         channelResult = result
         this.allowedFileExtensions = allowedFileExtensions
         this.invalidFileNameSymbols = invalidFileNameSymbols
+        this.isMultipleSelection = isMultipleSelection
 
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
+
         if (allowedMimeTypes != null) {
             if (allowedMimeTypes.size == 1) {
                 intent.type = allowedMimeTypes.first()
@@ -49,6 +53,9 @@ class FlutterDocumentPickerDelegate(
             }
         } else {
             intent.type = "*/*"
+        }
+        if(isMultipleSelection == true){
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         }
 
         activity.startActivityForResult(intent, REQUEST_CODE_PICK_FILE)
@@ -60,9 +67,10 @@ class FlutterDocumentPickerDelegate(
                 val params = getFileCopyParams(resultCode, data)
                 val channelResult = channelResult
                 val allowedFileExtensions = allowedFileExtensions
+                val intersectedExtension = allowedFileExtensions?.intersect(params.map { param -> param.extension }.toSet()) ?: setOf()
                 if (params != null) {
-                    if (allowedFileExtensions != null && !allowedFileExtensions.contains(params.extension)) {
-                        channelResult?.error("extension_mismatch", "Picked file extension mismatch!", params.extension)
+                    if (allowedFileExtensions != null && intersectedExtension.isNotEmpty()) {
+                        channelResult?.error("extension_mismatch", "Picked file extension mismatch!", intersectedExtension.first())
                     } else {
                         startLoader(params)
                     }
@@ -77,66 +85,90 @@ class FlutterDocumentPickerDelegate(
         }
     }
 
-    private fun startLoader(params: FileCopyParams) {
-        val bundle = Bundle()
-        bundle.putParcelable(EXTRA_URI, params.uri)
-        bundle.putString(EXTRA_FILENAME, params.fileName)
+    private fun startLoader(listParams: List<FileCopyParams>) {
+        for(params in listParams){
+            val bundle = Bundle()
+            bundle.putParcelableArray(EXTRA_URI, listParams.map { p -> p.uri }.toTypedArray())
+            bundle.putStringArray(EXTRA_FILENAME, listParams.map { p -> p.fileName }.toTypedArray())
 
-        val loaderManager = activity.loaderManager
-        val loader = loaderManager.getLoader<String>(LOADER_FILE_COPY)
-        if (loader == null) {
-            loaderManager.initLoader(LOADER_FILE_COPY, bundle, this)
-        } else {
-            loaderManager.restartLoader(LOADER_FILE_COPY, bundle, this)
+            val loaderManager = activity.loaderManager
+            val loader = loaderManager.getLoader<String>(LOADER_FILE_COPY)
+            if (loader == null) {
+                loaderManager.initLoader(LOADER_FILE_COPY, bundle, this)
+            } else {
+                loaderManager.restartLoader(LOADER_FILE_COPY, bundle, this)
+            }
         }
     }
 
-    override fun onCreateLoader(id: Int, args: Bundle): Loader<FileCopyTaskLoaderResult> {
-        val uri = args.getParcelable<Uri>(EXTRA_URI)!!
-        val fileName = args.getString(EXTRA_FILENAME)!!
-        return FileCopyTaskLoader(activity, uri, fileName)
+    override fun onCreateLoader(id: Int, args: Bundle): Loader<List<FileCopyTaskLoaderResult>> {
+
+        val listUri = (args.getParcelableArray(EXTRA_URI)!! as Array<Uri>).toList()
+        val listFileName = (args.getStringArray(EXTRA_FILENAME)!! as Array<String>).toList()
+        return FileCopyTaskLoader(activity, listUri, listFileName)
     }
 
-    override fun onLoadFinished(loader: Loader<FileCopyTaskLoaderResult>?, data: FileCopyTaskLoaderResult) {
-        if(data.isSuccess()) {
-            channelResult?.success(data.result)
+    override fun onLoadFinished(loader: Loader<List<FileCopyTaskLoaderResult>>?, data: List<FileCopyTaskLoaderResult>) {
+        if(data.any { it.isSuccess() }) {
+            channelResult?.success(data.map {  it.result }.toList())
         } else {
-            channelResult?.error("LOAD_FAILED", data.error.toString(), null)
+            channelResult?.error("LOAD_FAILED", data.first {  it.error != null }.error.toString(), null)
         }
         activity.loaderManager.destroyLoader(LOADER_FILE_COPY)
     }
 
-    override fun onLoaderReset(loader: Loader<FileCopyTaskLoaderResult>?) {
+    override fun onLoaderReset(loader: Loader<List<FileCopyTaskLoaderResult>>?) {
     }
 
-    private fun getFileCopyParams(resultCode: Int, data: Intent?): FileCopyParams? {
+    private fun getFileCopyParams(resultCode: Int, data: Intent?): List<FileCopyParams> {
         if (resultCode == Activity.RESULT_OK) {
             try {
+                val resultListUri = mutableListOf<FileCopyParams>()
                 val uri = data?.data
                 if (uri != null) {
-                    val fileName = getFileName(uri)
-
-                    if (fileName != null) {
-                        val sanitizedFileName = sanitizeFileName(fileName)
-
-                        return FileCopyParams(
-                            uri = uri,
-                            fileName = sanitizedFileName,
-                            extension = getFileExtension(sanitizedFileName)
-                        )
+                    val parseParams = parseFileCopyParams(uri)
+                    if(parseParams != null){
+                        resultListUri.add(parseParams)
                     }
                 }
+                else{
+                    for (index in 0 until (data?.clipData?.itemCount ?: 0)){
+                        val uri = data?.clipData?.getItemAt(index)?.uri
+                        if (uri != null) {
+                            val parseParams = parseFileCopyParams(uri)
+                            if(parseParams != null){
+                                resultListUri.add(parseParams)
+                            }
+                        }
+                    }
+                }
+                return resultListUri
             } catch (e: Exception) {
                 Log.e(FlutterDocumentPickerPlugin.TAG, "handlePickFileResult", e)
             }
         }
+        return listOf()
+    }
+
+    private fun parseFileCopyParams(uri: Uri): FileCopyParams? {
+        val fileName = getFileName(uri)
+        if (fileName != null) {
+            val sanitizedFileName = sanitizeFileName(fileName)
+            return FileCopyParams(
+                uri = uri,
+                fileName = sanitizedFileName,
+                extension = getFileExtension(sanitizedFileName)
+            )
+        }
         return null
     }
+
+
 
     private fun sanitizeFileName(fileName: String): String {
         var sanitizedFileName = fileName
         val invalidSymbols = invalidFileNameSymbols
-        if (invalidSymbols != null && invalidSymbols.isNotEmpty()) {
+        if (!invalidSymbols.isNullOrEmpty()) {
             invalidSymbols.forEach {
                 sanitizedFileName = sanitizedFileName.replace(it, "_")
             }
@@ -166,14 +198,14 @@ class FlutterDocumentPickerDelegate(
 
 data class FileCopyParams(val uri: Uri, val fileName: String, val extension: String?)
 
-class FileCopyTaskLoader(context: Context, private val uri: Uri, private val fileName: String) : AsyncTaskLoader<FileCopyTaskLoaderResult>(context) {
-    override fun loadInBackground(): FileCopyTaskLoaderResult {
-        try {
-            return FileCopyTaskLoaderResult(copyToTemp(uri = uri, fileName = fileName))
-        } catch (e: Exception) {
-            Log.e(FlutterDocumentPickerPlugin.TAG, "handlePickFileResult", e)
-            return FileCopyTaskLoaderResult(e)
-        }
+class FileCopyTaskLoader(context: Context, private val listUri: List<Uri>, private val listFileName: List<String>) : AsyncTaskLoader<List<FileCopyTaskLoaderResult>>(context) {
+    override fun loadInBackground(): List<FileCopyTaskLoaderResult> {
+      return listUri.mapIndexed { index, uri ->  try {
+           FileCopyTaskLoaderResult(copyToTemp(uri = uri, fileName = listFileName[index]))
+      } catch (e: Exception) {
+          Log.e(FlutterDocumentPickerPlugin.TAG, "handlePickFileResult", e)
+           FileCopyTaskLoaderResult(e)
+      }}.toList()
     }
 
     override fun onStartLoading() {

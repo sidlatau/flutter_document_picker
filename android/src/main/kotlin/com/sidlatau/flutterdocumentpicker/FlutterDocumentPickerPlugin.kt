@@ -18,6 +18,7 @@ class FlutterDocumentPickerPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
         private const val ARG_ALLOWED_FILE_EXTENSIONS = "allowedFileExtensions"
         private const val ARG_ALLOWED_MIME_TYPES = "allowedMimeTypes"
         private const val ARG_INVALID_FILENAME_SYMBOLS = "invalidFileNameSymbols"
+        private const val ARG_IS_MULTIPLE_SELECTION = "isMultipleSelection"
     }
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
@@ -60,7 +61,8 @@ class FlutterDocumentPickerPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                 result,
                 allowedFileExtensions = parseArray(call, ARG_ALLOWED_FILE_EXTENSIONS),
                 allowedMimeTypes = parseArray(call, ARG_ALLOWED_MIME_TYPES),
-                invalidFileNameSymbols = parseArray(call, ARG_INVALID_FILENAME_SYMBOLS)
+                invalidFileNameSymbols = parseArray(call, ARG_INVALID_FILENAME_SYMBOLS),
+                isMultipleSelection = call.argument(ARG_IS_MULTIPLE_SELECTION)
             )
         } else {
             result.notImplemented()

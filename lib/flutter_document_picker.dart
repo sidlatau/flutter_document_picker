@@ -11,7 +11,8 @@ class FlutterDocumentPicker {
       params?.toJson(),
     ))
         ?.cast<String?>();
-    return result.length > 0 ? result.first : null;
+
+    return result?.isNotEmpty ?? false ? result.first : null;
   }
 
   static Future<List<String?>?> openDocuments({FlutterDocumentPickerParams? params}) async {
