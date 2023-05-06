@@ -29,7 +29,8 @@ public class SwiftFlutterDocumentPickerPlugin: NSObject, FlutterPlugin {
         return FlutterDocumentPickerParams(
                 allowedUtiTypes: args[FlutterDocumentPickerParams.ALLOWED_UTI_TYPES]  as? [String],
                 allowedFileExtensions: args[FlutterDocumentPickerParams.ALLOWED_FILE_EXTENSIONS]  as? [String],
-            invalidFileNameSymbols: args[FlutterDocumentPickerParams.INVALID_FILENAME_SYMBOLS]  as? [String]
+                invalidFileNameSymbols: args[FlutterDocumentPickerParams.INVALID_FILENAME_SYMBOLS]  as? [String],
+                isMultipleSelection: args[FlutterDocumentPickerParams.IS_MULTIPLE_SELECTION]  as? Bool
             )
     }
 }
@@ -38,7 +39,9 @@ struct FlutterDocumentPickerParams {
     static let ALLOWED_UTI_TYPES = "allowedUtiTypes"
     static let ALLOWED_FILE_EXTENSIONS = "allowedFileExtensions"
     static let INVALID_FILENAME_SYMBOLS = "invalidFileNameSymbols"
+    static let IS_MULTIPLE_SELECTION = "isMultipleSelection"
     let allowedUtiTypes: [String]?
     let allowedFileExtensions: [String]?
     let invalidFileNameSymbols: [String]?
+    let isMultipleSelection: Bool?
 }
