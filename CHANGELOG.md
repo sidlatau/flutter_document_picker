@@ -1,3 +1,7 @@
+## 5.2.0
+
+* Allow to select multiple files. Thanks, @alexei-kruk-idf (PR #46)
+
 ## 5.1.0
 
 * Fix build issues on Flutter 3.

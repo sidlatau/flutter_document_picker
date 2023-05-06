@@ -14,6 +14,7 @@ class _MyAppState extends State<MyApp> {
   bool _iosPublicDataUTI = true;
   bool _checkByCustomExtension = false;
   bool _checkByMimeType = false;
+  bool _isMultipleSelection = false;
 
   final _utiController = TextEditingController(
     text: 'com.sidlatau.example.mwfbak',
@@ -54,7 +55,7 @@ class _MyAppState extends State<MyApp> {
               children: <Widget>[
                 Text(
                   'Picked file path:',
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 Text('$_path'),
                 _pickFileInProgress ? CircularProgressIndicator() : Container(),
@@ -98,8 +99,12 @@ class _MyAppState extends State<MyApp> {
                 .toList()
             : null,
       );
-
-      result = await FlutterDocumentPicker.openDocument(params: params);
+      if (_isMultipleSelection) {
+        final list = await FlutterDocumentPicker.openDocuments(params: params);
+        result = list?.where((x) => x != null).join('\n');
+      } else {
+        result = await FlutterDocumentPicker.openDocument(params: params);
+      }
     } catch (e) {
       print(e);
       result = 'Error: $e';
@@ -120,7 +125,7 @@ class _MyAppState extends State<MyApp> {
       children: <Widget>[
         Text(
           'Example app is configured to pick custom document type with extension ".mwfbak"',
-          style: Theme.of(context).textTheme.bodyText2,
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
         Param(
           isEnabled: !_iosPublicDataUTI,
@@ -165,6 +170,29 @@ class _MyAppState extends State<MyApp> {
     return ParamsCard(
       title: 'Common Params',
       children: <Widget>[
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Text(
+                  'Select multiple files - return list of paths instead of single path',
+                  softWrap: true,
+                ),
+              ),
+            ),
+            Checkbox(
+              value: _isMultipleSelection,
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    _isMultipleSelection = value;
+                  });
+                }
+              },
+            ),
+          ],
+        ),
         Param(
           isEnabled: _checkByCustomExtension,
           description:
@@ -256,7 +284,7 @@ class ParamsCard extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: Text(
                   title,
-                  style: Theme.of(context).textTheme.headline5,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
             ]..addAll(children),

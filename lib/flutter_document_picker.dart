@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 class FlutterDocumentPicker {
-  static const MethodChannel _channel = MethodChannel('flutter_document_picker');
+  static const MethodChannel _channel =
+      MethodChannel('flutter_document_picker');
 
-  static Future<String?> openDocument({FlutterDocumentPickerParams? params}) async {
+  static Future<String?> openDocument(
+      {FlutterDocumentPickerParams? params}) async {
     final result = (await _channel.invokeMethod(
       'pickDocument',
       params?.toJson(),
@@ -15,7 +17,8 @@ class FlutterDocumentPicker {
     return result?.isNotEmpty ?? false ? result.first : null;
   }
 
-  static Future<List<String?>?> openDocuments({FlutterDocumentPickerParams? params}) async {
+  static Future<List<String?>?> openDocuments(
+      {FlutterDocumentPickerParams? params}) async {
     final paramsJson = params?.toJson();
     paramsJson?.addAll({'isMultipleSelection': true});
     return (await _channel.invokeMethod(

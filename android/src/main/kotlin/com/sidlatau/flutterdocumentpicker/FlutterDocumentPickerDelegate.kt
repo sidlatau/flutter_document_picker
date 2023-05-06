@@ -189,7 +189,10 @@ class FlutterDocumentPickerDelegate(
         var fileName: String? = null
         activity.contentResolver.query(uri, null, null, null, null, null)?.use { cursor ->
             if (cursor.moveToFirst()) {
-                fileName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if(index >=0) {
+                    fileName = cursor.getString(index)
+                }
             }
         }
         return fileName
