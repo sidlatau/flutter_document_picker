@@ -1,3 +1,7 @@
+## 5.2.1
+
+* Updated documentation how to pick multiple files.
+
 ## 5.2.0
 
 * Allow to select multiple files. Thanks, @alexei-kruk-idf (PR #46)
