@@ -4,13 +4,13 @@ description: Demonstrates how to use the flutter_document_picker plugin.
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.12.0-133.2.beta <3.0.0'
+  sdk: ">=2.16.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^0.1.2
+  cupertino_icons: ^1.0.5
 
 dev_dependencies:
   flutter_test:
