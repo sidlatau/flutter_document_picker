@@ -1,3 +1,8 @@
+## 5.2.2
+
+* Updated example app. Thanks, @EnesKaraosman (PR #47)
+* Fixed issue when no files are selected. Thanks, @alexei-kruk-idf (PR #48)
+
 ## 5.2.1
 
 * Updated documentation how to pick multiple files.
