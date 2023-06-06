@@ -68,7 +68,7 @@ class FlutterDocumentPickerDelegate(
                 val channelResult = channelResult
                 val allowedFileExtensions = allowedFileExtensions
                 val intersectedExtension = allowedFileExtensions?.intersect(params.map { param -> param.extension }.toSet()) ?: setOf()
-                if (params != null) {
+                if (params != null && params.isNotEmpty()) {
                     if (allowedFileExtensions != null && intersectedExtension.isNotEmpty()) {
                         channelResult?.error("extension_mismatch", "Picked file extension mismatch!", intersectedExtension.first())
                     } else {
