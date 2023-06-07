@@ -1,3 +1,7 @@
+## 5.2.3
+
+* Fixed allowed extension validation.
+
 ## 5.2.2
 
 * Updated example app. Thanks, @EnesKaraosman (PR #47)
